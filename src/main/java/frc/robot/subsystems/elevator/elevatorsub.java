@@ -227,6 +227,14 @@ public class elevatorsub extends SubsystemBase {
     re.setControl(new VoltageOut(0));
   }
 
+  public int whichlist() {
+    if (activeSetpoints == setpoints1) {
+      return 1;
+    } else {
+      return 2;
+    }
+  }
+
   public Command cmd(double position) {
     return new Command() {
       @Override

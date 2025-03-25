@@ -9,10 +9,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.pathfinding.Pathfinding;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -28,6 +24,7 @@ import frc.robot.commands.barge;
 import frc.robot.commands.l3algae;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOCTRE;
@@ -45,8 +42,6 @@ import frc.robot.subsystems.flywheel.FlywheelIOSIM;
 import frc.robot.subsystems.flywheel.shooter;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOPhotonVision;
-import frc.robot.subsystems.vision.VisionIOPhotonVisionSIM;
 import frc.robot.utils.LocalADStarAK;
 import frc.robot.utils.SidePoseMatcher;
 import frc.robot.utils.TunableController;
@@ -61,7 +56,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
 
-  public static volatile boolean BEFORE_MATCH = true; // Controls MT1-only usage before match
+  public static volatile boolean BEFORE_MATCH = false; // Controls MT1-only usage before match
 
   // Swerve & Subsystem Fields
   private final LinearVelocity MaxSpeed = TunerConstants.kSpeedAt12Volts;
@@ -91,13 +86,14 @@ public class Robot extends LoggedRobot {
   private final Elevator elevator;
   private final Arm arm;
   // Vision subsystem field for non-sim (REAL) mode
-  private Vision vision = null;
+  private Vision vision;
 
   // Additional subsystems & commands
   private shooter shoot = new shooter();
   private elevatorsub elevator1 = new elevatorsub();
   private algee algea = new algee();
   private LEDSubsystem led = new LEDSubsystem();
+  private final PhotonVision hi;
 
   // Autonomous chooser
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -106,6 +102,7 @@ public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   public Robot() {
+
     // --- Setup Logging, CAN, & Pathfinding ---
     CanBridge.runTCP();
     Pathfinding.setPathfinder(new LocalADStarAK());
@@ -136,55 +133,26 @@ public class Robot extends LoggedRobot {
     switch (Constants.currentMode) {
       case REAL:
         drivetrain = new Drive(currentDriveIO);
+        hi = new PhotonVision(drivetrain);
+
         // Initialize vision for the real robot using limelight cameras.
-        vision =
-            new Vision(
-                drivetrain::addVisionData,
-                new VisionIOPhotonVision(
-                    "FrontRight",
-                    new Transform3d(
-                        new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(30.625)),
-                        new Rotation3d(0, Math.toRadians(35), Math.toRadians(0))),
-                    drivetrain::getVisionParameters));
+
         flywheel = new Flywheel(new FlywheelIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         arm = new Arm(new ArmIO() {});
         break;
       case SIM:
         drivetrain = new Drive(currentDriveIO);
-        vision =
-            new Vision(
-                drivetrain::addVisionData,
-                new VisionIOPhotonVisionSIM(
-                    "Front Camera",
-                    new Transform3d(
-                        new Translation3d(0.2427, -0.2913, 0.19),
-                        new Rotation3d(0, Math.toRadians(0), Math.toRadians(30))),
-                    drivetrain::getVisionParameters),
-                new VisionIOPhotonVisionSIM(
-                    "Back Camera",
-                    new Transform3d(
-                        new Translation3d(-0.2, 0.0, 0.8),
-                        new Rotation3d(0, Math.toRadians(20), Math.toRadians(180))),
-                    drivetrain::getVisionParameters),
-                new VisionIOPhotonVisionSIM(
-                    "Left Camera",
-                    new Transform3d(
-                        new Translation3d(0.0, 0.2, 0.8),
-                        new Rotation3d(0, Math.toRadians(20), Math.toRadians(90))),
-                    drivetrain::getVisionParameters),
-                new VisionIOPhotonVisionSIM(
-                    "Right Camera",
-                    new Transform3d(
-                        new Translation3d(0.0, -0.2, 0.8),
-                        new Rotation3d(0, Math.toRadians(20), Math.toRadians(-90))),
-                    drivetrain::getVisionParameters));
+        hi = new PhotonVision(drivetrain);
+
         flywheel = new Flywheel(new FlywheelIOSIM());
         elevator = new Elevator(new ElevatorIOSIM());
         arm = new Arm(new ArmIOSIM());
         break;
       default:
         drivetrain = new Drive(new DriveIO() {});
+        hi = new PhotonVision(drivetrain);
+
         vision =
             new Vision(
                 drivetrain::addVisionData,
@@ -195,11 +163,14 @@ public class Robot extends LoggedRobot {
         flywheel = new Flywheel(new FlywheelIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         arm = new Arm(new ArmIOCTRE() {});
+
         break;
     }
 
     NamedCommands.registerCommand("shoot", shoot.autoncmdOut(-0.2, 16));
     NamedCommands.registerCommand("Intake", shoot.autoncmdIn(0.3));
+    NamedCommands.registerCommand("IntakeLong", shoot.autoncmdIn(0.3));
+
     NamedCommands.registerCommand("Backdrive", shoot.cmd(0.05));
     NamedCommands.registerCommand("elevatoru", new Elevatorcmd(elevator1, 4, true));
     NamedCommands.registerCommand(
@@ -218,6 +189,7 @@ public class Robot extends LoggedRobot {
   }
 
   private void configureBindings() {
+
     Command Positionl2 =
         new SequentialCommandGroup(
             new ParallelCommandGroup(
@@ -263,11 +235,14 @@ public class Robot extends LoggedRobot {
     }
 
     // Additional joystick bindings for shooter, elevator, etc.
+
+    // intake
     joystick
         .leftTrigger(0.2)
         .whileTrue(
-            new ParallelCommandGroup(shoot.cmd(0.3), elevator1.runOnce(() -> elevator1.resetenc())))
-        .whileFalse(shoot.cmd(0.2));
+            new ParallelCommandGroup(
+                shoot.scourcecmd(0.3), elevator1.runOnce(() -> elevator1.resetenc())))
+        .whileFalse(shoot.cmd(0.12));
 
     joystick
         .rightTrigger(0.2)
@@ -302,12 +277,13 @@ public class Robot extends LoggedRobot {
     //             new ParallelCommandGroup(new Elevatorcmd(elevator1, 0, false))));
     // joystick.a().whileTrue(new PIDSwerve(drivetrain,new Pose2d(1,2,new Rotation2d())));
     joystick
-        .a()
+        .leftBumper()
         .whileTrue(
             drivetrain.defer(
                 () ->
                     drivetrain.autoAlighnTopose(
                         SidePoseMatcher.getClosestPose(drivetrain.getPose()))));
+    joystick.leftBumper().whileTrue(led.getSetYellowCommand());
 
     joystick
         .pov(0)
@@ -383,11 +359,6 @@ public class Robot extends LoggedRobot {
     Threads.setCurrentThreadPriority(false, 10);
     SmartDashboard.putString("State", Constants.getRobotState().name());
     SmartDashboard.putString("Elevator Position", Constants.getElevatorState().name());
-
-    // Update vision each cycle if it was initialized
-    if (vision != null) {
-      vision.periodic();
-    }
   }
 
   @Override
@@ -408,7 +379,12 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
+    }
+  }
 
   @Override
   public void teleopInit() {

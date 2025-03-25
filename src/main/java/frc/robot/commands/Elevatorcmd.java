@@ -12,7 +12,7 @@ public class Elevatorcmd extends Command {
   private double l1 = -7.13134765625;
   private double l2 = -26.300390625;
   private double l3 = -26.0193359375;
-  private double l4 = -24.0123046875;
+  private double l4 = -23.8123046875;
 
   private boolean first;
   private boolean up;
@@ -41,6 +41,13 @@ public class Elevatorcmd extends Command {
 
   @Override
   public void initialize() {
+
+    if (elevator.whichlist() == 1) {
+
+      Constants.setRobotState(Constants.RobotState.IDLE);
+    } else if (elevator.whichlist() == 2) {
+      Constants.setRobotState(Constants.RobotState.ALGEA);
+    }
 
     if (targetPosition == 1) {
       Constants.setElevatorState(Constants.Elevatorposition.L1);

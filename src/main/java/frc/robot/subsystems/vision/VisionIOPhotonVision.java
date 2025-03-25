@@ -31,6 +31,7 @@ public class VisionIOPhotonVision implements VisionIO {
 
   public VisionIOPhotonVision(
       String cameraName, Transform3d robotToCamera, Supplier<VisionParameters> visionParams) {
+
     this.camera = new PhotonCamera(cameraName);
     this.robotToCamera = robotToCamera;
     this.visionParams = visionParams;

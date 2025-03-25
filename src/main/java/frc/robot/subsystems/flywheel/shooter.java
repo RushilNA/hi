@@ -50,7 +50,29 @@ public class shooter extends SubsystemBase {
   public Command cmd(double speed) {
     return new Command() {
       @Override
+      public void initialize() {}
+
+      @Override
+      public void execute() {
+        // check(position);
+        intake.set(speed);
+      }
+
+      @Override
+      public void end(boolean interrupted) {}
+
+      @Override
+      public boolean isFinished() {
+        return false; // Check if the setpoint is reached
+      }
+    };
+  }
+
+  public Command scourcecmd(double speed) {
+    return new Command() {
+      @Override
       public void initialize() {
+
         // Initialization code, such as resetting encoders or PID controllers
         // int kErrThreshold = 10; // how many sensor units until its close-enough
         // int kLoopsToSettle = 2; // how many loops sensor must be close-enough
@@ -124,7 +146,7 @@ public class shooter extends SubsystemBase {
 
       @Override
       public boolean isFinished() {
-        return time3.get() > .75 && Math.abs(intake.getVelocity().getValueAsDouble()) < 24;
+        return time3.get() > 1.25 && Math.abs(intake.getVelocity().getValueAsDouble()) < 24;
       }
     };
   }

@@ -187,9 +187,9 @@ public class Drive extends SubsystemBase {
                     .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
         new PPHolonomicDriveController(
             // PID constants for translation
-            new PIDConstants(10, 0, 0),
+            new PIDConstants(5, 0, 0),
             // PID constants for rotation
-            new PIDConstants(7, 0, 0)),
+            new PIDConstants(5, 0, 0)),
         Constants.PP_CONFIG,
         // Assume the path needs to be flipped for Red vs Blue, this is normally the case
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
@@ -322,9 +322,9 @@ public class Drive extends SubsystemBase {
           ChassisSpeeds speeds = getAlignmentSpeeds(Targetpose);
           double maxLinear = Constants.OBSERVED_DRIVE_SPEED.in(MetersPerSecond);
           speeds.vxMetersPerSecond =
-              MathUtil.clamp(speeds.vxMetersPerSecond * 1.001, -maxLinear, maxLinear);
+              MathUtil.clamp(speeds.vxMetersPerSecond * 1, -maxLinear, maxLinear);
           speeds.vyMetersPerSecond =
-              MathUtil.clamp(speeds.vyMetersPerSecond, -maxLinear, maxLinear);
+              MathUtil.clamp(speeds.vyMetersPerSecond * 1, -maxLinear, maxLinear);
           io.setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds));
         });
   }
@@ -435,6 +435,7 @@ public class Drive extends SubsystemBase {
   }
 
   public void addVisionData(List<VisionMeasurement> visionData) {
+
     visionData.forEach(this::addVisionMeasurement);
   }
 
