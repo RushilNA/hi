@@ -142,6 +142,18 @@ public final class Constants {
     ALGEA; // Robot is climbing
   }
 
+
+  public static enum Alagestate {
+    None, // Robot is not doing anything2
+    Holding
+  }
+
+  public static enum coralstate {
+    None, // Robot is not doing anything2
+    Holding
+  }
+     
+
   public enum Elevatorposition {
     L4,
     L3,
@@ -153,9 +165,23 @@ public final class Constants {
   private static Elevatorposition curentElevatorposition = Elevatorposition.L0;
 
   private static RobotState currentRobotState = RobotState.IDLE;
+  
+  private static Alagestate currentalagestate = Alagestate.None;
+
+  private static coralstate currentcoralstate = coralstate.None;
+
+
 
   public static Elevatorposition getElevatorState() {
     return curentElevatorposition;
+  }
+
+  public static Alagestate getAlgaestate() {
+    return currentalagestate;
+  }
+
+  public static coralstate getCoralstate() {
+    return currentcoralstate;
   }
 
   public static void setElevatorState(Elevatorposition newState) {
@@ -208,6 +234,15 @@ public final class Constants {
     currentRobotState = newState;
     System.out.println("Robot state updated to: " + newState);
   }
+
+  public static void setAlgaestate(Alagestate newState) {
+    currentalagestate = newState;
+  }
+
+  public static void setCoralstate(coralstate newState) {
+    currentcoralstate = newState;
+  }
+
 
   static {
     // Checks to make sure config matches GUI values. Code should not throw as not breaking

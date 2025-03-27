@@ -89,8 +89,8 @@ public class Hyper extends Command {
     // After the ball is detected, wait for the delay to elapse before pulling the elevator back
     // down.
     if (ballDetected && delayTimer.get() > 1) {
-      ele.setMotionMagicflip(-17);
-      ele.setMotionMagic(5);
+      ele.setMotionMagicflip(-26);
+      ele.setMotionMagic(0);
     }
   }
 

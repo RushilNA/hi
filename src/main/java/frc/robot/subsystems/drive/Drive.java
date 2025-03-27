@@ -316,6 +316,12 @@ public class Drive extends SubsystemBase {
   //     // Apply the computed speeds using your IO interface
   //     io.setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds));
   //   })};
+
+
+  public boolean isAtTarget(Pose2d target, Pose2d currentPose) {
+    double toleranceMeters = 0.1; // 10 cm tolerance
+    return currentPose.getTranslation().getDistance(target.getTranslation()) < toleranceMeters;
+  }
   public Command autoAlighnTopose(Pose2d Targetpose) {
     return run(
         () -> {

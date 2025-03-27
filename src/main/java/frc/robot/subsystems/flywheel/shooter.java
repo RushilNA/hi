@@ -6,7 +6,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class shooter extends SubsystemBase {
   private TalonFX intake = new TalonFX(16);
@@ -21,6 +23,7 @@ public class shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
+    
 
     SmartDashboard.putNumber("Intake Current", intake.getStatorCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Intake Velocity", intake.getVelocity().getValueAsDouble());
@@ -36,6 +39,10 @@ public class shooter extends SubsystemBase {
 
   public void speed(double speed) {
     intake.set(speed);
+  }
+
+  public double velocity(){
+    return intake.getVelocity().getValueAsDouble();
   }
 
   public boolean hasCurrentSpike() {
@@ -54,6 +61,13 @@ public class shooter extends SubsystemBase {
 
       @Override
       public void execute() {
+        if (speed == -0.2 && intake.getVelocity().getValueAsDouble() > 45){
+          Constants.setCoralstate(Constants.coralstate.None);
+        }
+
+        if(speed == 0.1 && Math.abs(intake.getVelocity().getValueAsDouble()) < 0.5){
+          Constants.setCoralstate(Constants.coralstate.Holding);
+        }
         // check(position);
         intake.set(speed);
       }
@@ -100,6 +114,15 @@ public class shooter extends SubsystemBase {
     double Velo = intake.getVelocity().getValueAsDouble();
 
     double velocitythreshold = inputVelo;
+
+    return Math.abs(Velo) > velocitythreshold;
+  }
+
+  public boolean hasVelocityautoalighn() {
+
+    double Velo = intake.getVelocity().getValueAsDouble();
+
+    double velocitythreshold = 20;
 
     return Math.abs(Velo) > velocitythreshold;
   }

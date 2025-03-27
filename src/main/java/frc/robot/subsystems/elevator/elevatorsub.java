@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.*;
 import frc.robot.Constants;
 import java.util.List;
 
@@ -208,9 +207,15 @@ public class elevatorsub extends SubsystemBase {
       return true;
 
     } else {
-      return false;
+      return false; 
     }
   }
+
+  public boolean autoalighncheck(int targeposition){
+    return targeposition(targeposition) + 0.3   < Math.abs(le.getPosition().getValueAsDouble() )|| targeposition(targeposition) -0.3 < le.getPosition().getValueAsDouble();
+  }
+
+
 
   public void initializePid(double position) {
     pidup.reset();
@@ -382,9 +387,9 @@ public class elevatorsub extends SubsystemBase {
   // 4.7
   // 4.8
 
-  public boolean autoncheckposition(double index) {
+  public boolean autoncheckposition(int index) {
     double sensor = le.getPosition().getValueAsDouble();
-    return index - 0.3 < sensor;
+    return targeposition(index) - 0.3 < sensor;
   }
 
   public boolean elecheck(int index) {

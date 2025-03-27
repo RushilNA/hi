@@ -2,11 +2,10 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.subsystems.arm.algee;
 import frc.robot.subsystems.elevator.elevatorsub;
 
-public class l3algae extends Command {
+public class Hyperl3 extends Command {
   private final algee m_algee;
   private final elevatorsub ele;
   private final double m_intakeSpeed;
@@ -28,7 +27,7 @@ public class l3algae extends Command {
    * @param velocityThreshold The shooter velocity (absolute value) below which we assume a ball is
    *     loaded.
    */
-  public l3algae(
+  public Hyperl3(
       algee algeeSubsystem,
       double intakeSpeed,
       double velocityThreshold,
@@ -58,11 +57,6 @@ public class l3algae extends Command {
   @Override
   public void execute() {
 
-    if(ballDetected){
-      Constants.setAlgaestate(Constants.Alagestate.Holding);
-
-    }
-
     // Read the current shooter velocity.
     currentVelocity = Math.abs(m_algee.velocity());
     // If the ball is not yet detected and the elevator hasn't reached the intake position, command
@@ -83,7 +77,11 @@ public class l3algae extends Command {
     if (ballDetected == false && ele.flipcheck(flippos) && currentVelocity < 10) {
 
       ballDetected = true;
-      m_algee.setShooter(0.25);
+
+    if(ballDetected){
+      
+    }
+      m_algee.setShooter(0.3);
       ele.setMotionMagic(elevatorpos);
 
       // Start the delay timer
@@ -95,8 +93,8 @@ public class l3algae extends Command {
     // After the ball is detected, wait for the delay to elapse before pulling the elevator back
     // down.
     if (ballDetected && delayTimer.get() > 1) {
-      ele.setMotionMagicflip(-4);
-      ele.setMotionMagic(0);
+      ele.setMotionMagicflip(-26.0193359375);
+      ele.setMotionMagic(9.84423828125);
     }
   }
 

@@ -94,7 +94,40 @@ public class SidePoseMatcher {
         .orElse(null);
   }
 
-  public static Pose2d hu() {
-    return new Pose2d();
+  /**
+ * Returns a Pose2d that is 2 meters behind the closest predefined pose
+ * based on the current robot pose and alliance.
+ *
+ * @param currentPose The current robot pose
+ * @return A new Pose2d 2 meters behind the closest predefined pose
+ */
+public static Pose2d getBackedUpClosestPose(Pose2d currentPose) {
+  Pose2d closestPose = getClosestPose(currentPose);
+  if (closestPose == null) {
+    return null; // Safety check
+  }
+  return moveBackward2Meters(closestPose);
+}
+
+
+  
+
+  /**
+     * Returns a new Pose2d that is 2 meters backward from the given pose,
+     * in the opposite direction of its current rotation.
+     * @param pose The original pose
+     * @return A new Pose2d 2 meters behind the original
+     */
+    public static Pose2d moveBackward2Meters(Pose2d pose) {
+      double distance = -2.0; // Negative for backward movement
+
+      Rotation2d rotation = pose.getRotation();
+
+      // Create a translation 2 meters *behind* the direction of the heading
+      Translation2d backwardOffset = new Translation2d(distance, rotation);
+      Translation2d newTranslation = pose.getTranslation().plus(backwardOffset);
+
+      return new Pose2d(newTranslation, rotation);
   }
 }
+
