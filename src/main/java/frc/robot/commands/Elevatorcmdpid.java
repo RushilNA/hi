@@ -4,15 +4,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.elevator.elevatorsub;
 
-public class Elevatorcmd2 extends Command {
+public class Elevatorcmdpid extends Command {
   private final elevatorsub elevator;
   private final int targetPosition;
   private final double tolerance = 0.25; // Tolerance to switch from Motion Magic to PID
-  private double l0 = -5;
+  private double l0 = 0;
   private double l1 = -7.13134765625;
-  private double l2 = -27.000390625;
-  private double l3 = -26.700390625;
-  private double l4 = -24.8123046875;
+  private double l2 = -26.000390625;
+  private double l3 = -26.0193359375;
+  private double l4 = -24.15123046875;
 
   private boolean first;
   private boolean up;
@@ -32,7 +32,7 @@ public class Elevatorcmd2 extends Command {
    * @param elevator The elevator subsystem.
    * @param targetPosition The target position (in sensor units) to move to.
    */
-  public Elevatorcmd2(elevatorsub elevator, int targetPosition, boolean hi) {
+  public Elevatorcmdpid(elevatorsub elevator, int targetPosition, boolean hi) {
     this.up = hi;
     this.elevator = elevator;
     this.targetPosition = targetPosition;
@@ -41,6 +41,13 @@ public class Elevatorcmd2 extends Command {
 
   @Override
   public void initialize() {
+
+    if (elevator.whichlist() == 1) {
+
+      Constants.setRobotState(Constants.RobotState.IDLE);
+    } else if (elevator.whichlist() == 2) {
+      Constants.setRobotState(Constants.RobotState.ALGEA);
+    }
 
     if (targetPosition == 1) {
       Constants.setElevatorState(Constants.Elevatorposition.L1);
@@ -82,14 +89,14 @@ public class Elevatorcmd2 extends Command {
         // BargeShoot
 
       }
-      elevator.setsetpointauto(flipsetpoint);
 
       // Check if the flip motor has reached its setpoint.
       // Note: Use flipsetpoint (not targetPosition) for the check.
-      if (!elevator.flipcheck(flipsetpoint)) {
+      if (!elevator.flipcheck(-13)) {
 
         // Command the flip motor until it is at its setpoint.
-        elevator.transposepid();
+        elevator.setMotionMagicflip(flipsetpoint);
+        elevator.resetenc();
         // Do not start moving the elevator until the flip motor is ready.
         return;
       }
@@ -97,7 +104,7 @@ public class Elevatorcmd2 extends Command {
       // Once the flip motor is holding its setpoint, command the elevator.
 
       elevator.setMotionMagic1(targetPosition);
-      elevator.transposepid();
+      elevator.setMotionMagicflip(flipsetpoint);
       // When close enough to the target, switch to PID holding mode.
       // if (Math.abs(currentPos - targetPosition) < tolerance) {
       //   currentState = State.HOLDING;
@@ -108,7 +115,7 @@ public class Elevatorcmd2 extends Command {
     } else if (up == false) {
       elevator.Motionmagic(0);
       if (elevator.check(0)) {
-        elevator.setMotionMagicflip(0.4);
+        elevator.setMotionMagicflip(-0.4);
         // idk
       }
     }

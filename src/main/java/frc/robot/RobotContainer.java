@@ -228,25 +228,25 @@
 
 //     // Note that X is defined as forward according to WPILib convention,
 //     // and Y is defined as to the left according to WPILib convention.
-//     // drivetrain.setDefaultCommand(
-//     //     // Drivetrain will execute this command periodically
-//     //     drivetrain.applyRequest(
-//     //         () ->
-//     //             drive
-//     //                 .withVelocityX(
-//     //                     MaxSpeed.times(
-//     //                         -joystick
-//     //                             .customLeft()
-//     //                             .getY())) // Drive forward with negative Y (forward)
-//     //                 .withVelocityY(
-//     //                     MaxSpeed.times(
-//     //                         -joystick.customLeft().getX())) // Drive left with negative X
+    // drivetrain.setDefaultCommand(
+    //     // Drivetrain will execute this command periodically
+    //     drivetrain.applyRequest(
+    //         () ->
+    //             drive
+    //                 .withVelocityX(
+    //                     MaxSpeed.times(
+    //                         -joystick
+    //                             .customLeft()
+    //                             .getY())) // Drive forward with negative Y (forward)
+    //                 .withVelocityY(
+    //                     MaxSpeed.times(
+    //                         -joystick.customLeft().getX())) // Drive left with negative X
 // (left)
-//     //                 .withRotationalRate(
-//     //                     Constants.MaxAngularRate.times(
-//     //                         -joystick
-//     //                             .customRight()
-//     //                             .getX())))); // Drive counterclockwise with negative X (left)
+    //                 .withRotationalRate(
+    //                     Constants.MaxAngularRate.times(
+    //                         -joystick
+    //                             .customRight()
+    //                             .getX())))); // Drive counterclockwise with negative X (left)
 //     if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
 //       System.out.println("ok");
 //       drivetrain.setDefaultCommand(

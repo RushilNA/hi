@@ -18,35 +18,43 @@ public class SidePoseMatcher {
   // Hard-coded list of poses for the blue alliance.
   private static final List<Pose2d> bluePoses =
       Arrays.asList(
-          new Pose2d(new Translation2d(3.95, 2.81), new Rotation2d(Math.toRadians(59.62))),
-          new Pose2d(new Translation2d(3.64, 2.98), new Rotation2d(Math.toRadians(63.32))),
-          new Pose2d(new Translation2d(3.68, 2.96), new Rotation2d(Math.toRadians(62.46))),
-          new Pose2d(new Translation2d(3.16, 3.86), new Rotation2d(Math.toRadians(0.4))),
-          new Pose2d(new Translation2d(5.29, 2.96), new Rotation2d(Math.toRadians(119.43))),
-          new Pose2d(new Translation2d(4.95, 2.8), new Rotation2d(Math.toRadians(122.03))),
-          new Pose2d(new Translation2d(5.82, 3.87), new Rotation2d(Math.toRadians(-177.34))),
-          new Pose2d(new Translation2d(5.27, 5.1), new Rotation2d(Math.toRadians(-117.32))),
-          new Pose2d(new Translation2d(4.97, 5.28), new Rotation2d(Math.toRadians(-120.52))),
-          new Pose2d(new Translation2d(3.97, 5.26), new Rotation2d(Math.toRadians(-57.66))),
-          new Pose2d(new Translation2d(3.65, 5.07), new Rotation2d(Math.toRadians(-60.13))),
-          new Pose2d(new Translation2d(3.15, 4.2), new Rotation2d(Math.toRadians(3.34))),
-          new Pose2d(new Translation2d(3.23, 4.13), new Rotation2d(Math.toRadians(61.25))));
-
+          new Pose2d(new Translation2d(3.97, 2.78), new Rotation2d(Math.toRadians(56.79))),
+          new Pose2d(new Translation2d(3.69, 2.95), new Rotation2d(Math.toRadians(60.54))),
+          // 17
+          new Pose2d(new Translation2d(5.02, 2.8), new Rotation2d(Math.toRadians(121.84))),
+          new Pose2d(new Translation2d(5.34, 2.98), new Rotation2d(Math.toRadians(119.11))),
+          // 22
+          new Pose2d(new Translation2d(5.82, 3.87), new Rotation2d(Math.toRadians(-178.91))),
+          new Pose2d(new Translation2d(5.83, 4.24), new Rotation2d(Math.toRadians(177.52))),
+          // 21
+          new Pose2d(new Translation2d(5.3, 5.09), new Rotation2d(Math.toRadians(-118.12))),
+          new Pose2d(new Translation2d(4.99, 5.28), new Rotation2d(Math.toRadians(-121.69))),
+          // 20
+          new Pose2d(new Translation2d(3.93, 5.23), new Rotation2d(Math.toRadians(-57.35))),
+          new Pose2d(new Translation2d(3.63, 5.07), new Rotation2d(Math.toRadians(-61.68))),
+          // 19
+          new Pose2d(new Translation2d(3.16, 4.15), new Rotation2d(Math.toRadians(2.04))),
+          new Pose2d(new Translation2d(3.15, 3.8), new Rotation2d(Math.toRadians(0.42)))
+          // 18
+          );
   // Hard-coded list of poses for the red alliance.
   private static final List<Pose2d> redPoses =
       Arrays.asList(
-          new Pose2d(new Translation2d(14.38, 4.16), new Rotation2d(Math.toRadians(178.72))),
-          new Pose2d(new Translation2d(14.38, 3.86), new Rotation2d(Math.toRadians(-178))),
-          new Pose2d(new Translation2d(13.55, 5.09), new Rotation2d(Math.toRadians(-119.28))),
-          new Pose2d(new Translation2d(13.83, 4.97), new Rotation2d(Math.toRadians(-118.68))),
-          new Pose2d(new Translation2d(12.25, 3.08), new Rotation2d(Math.toRadians(64.42))),
-          new Pose2d(new Translation2d(12.57, 2.97), new Rotation2d(Math.toRadians(60.11))),
-          new Pose2d(new Translation2d(12.49, 5.21), new Rotation2d(Math.toRadians(-56.30))),
-          new Pose2d(new Translation2d(12.15, 5.07), new Rotation2d(Math.toRadians(-54.18))),
-          new Pose2d(new Translation2d(13.48, 2.87), new Rotation2d(Math.toRadians(125.72))),
-          new Pose2d(new Translation2d(13.76, 3.04), new Rotation2d(Math.toRadians(123.04))),
-          new Pose2d(new Translation2d(11.72, 4.24), new Rotation2d(Math.toRadians(-1.11))),
-          new Pose2d(new Translation2d(11.74, 3.90), new Rotation2d(Math.toRadians(-0.55))));
+          new Pose2d(new Translation2d(12.28, 2.95), new Rotation2d(Math.toRadians(62.05))),
+          new Pose2d(new Translation2d(12.56, 2.83), new Rotation2d(Math.toRadians(61.31))),
+          // 11
+          new Pose2d(new Translation2d(11.73, 3.83), new Rotation2d(Math.toRadians(-1.03))),
+          new Pose2d(new Translation2d(11.73, 4.15), new Rotation2d(Math.toRadians(3.55))),
+          // 8
+          new Pose2d(new Translation2d(12.24, 5.09), new Rotation2d(Math.toRadians(-60.93))),
+          new Pose2d(new Translation2d(12.55, 5.27), new Rotation2d(Math.toRadians(-59.06))),
+          // 6
+          new Pose2d(new Translation2d(13.56, 5.27), new Rotation2d(Math.toRadians(-120.87))),
+          new Pose2d(new Translation2d(13.88, 5.09), new Rotation2d(Math.toRadians(-116.9))),
+          new Pose2d(new Translation2d(14.39, 4.21), new Rotation2d(Math.toRadians(178.93))),
+          new Pose2d(new Translation2d(14.39, 3.88), new Rotation2d(Math.toRadians(-177.46))),
+          new Pose2d(new Translation2d(13.89, 2.97), new Rotation2d(Math.toRadians(118.9))),
+          new Pose2d(new Translation2d(13.6, 2.81), new Rotation2d(Math.toRadians(121.77))));
 
   // 7
   /**
@@ -95,39 +103,35 @@ public class SidePoseMatcher {
   }
 
   /**
- * Returns a Pose2d that is 2 meters behind the closest predefined pose
- * based on the current robot pose and alliance.
- *
- * @param currentPose The current robot pose
- * @return A new Pose2d 2 meters behind the closest predefined pose
- */
-public static Pose2d getBackedUpClosestPose(Pose2d currentPose) {
-  Pose2d closestPose = getClosestPose(currentPose);
-  if (closestPose == null) {
-    return null; // Safety check
+   * Returns a Pose2d that is 2 meters behind the closest predefined pose based on the current robot
+   * pose and alliance.
+   *
+   * @param currentPose The current robot pose
+   * @return A new Pose2d 2 meters behind the closest predefined pose
+   */
+  public static Pose2d getBackedUpClosestPose(Pose2d currentPose) {
+    Pose2d closestPose = getClosestPose(currentPose);
+    if (closestPose == null) {
+      return null; // Safety check
+    }
+    return moveBackward2Meters(closestPose);
   }
-  return moveBackward2Meters(closestPose);
-}
-
-
-  
 
   /**
-     * Returns a new Pose2d that is 2 meters backward from the given pose,
-     * in the opposite direction of its current rotation.
-     * @param pose The original pose
-     * @return A new Pose2d 2 meters behind the original
-     */
-    public static Pose2d moveBackward2Meters(Pose2d pose) {
-      double distance = -2.0; // Negative for backward movement
+   * Returns a new Pose2d that is 2 meters backward from the given pose, in the opposite direction
+   * of its current rotation.
+   *
+   * @param pose The original pose
+   * @return A new Pose2d 2 meters behind the original
+   */
+  public static Pose2d moveBackward2Meters(Pose2d pose) {
+    double distance = -0.7; // Negative for backward movement
 
-      Rotation2d rotation = pose.getRotation();
+    Rotation2d rotation = pose.getRotation();
 
-      // Create a translation 2 meters *behind* the direction of the heading
-      Translation2d backwardOffset = new Translation2d(distance, rotation);
-      Translation2d newTranslation = pose.getTranslation().plus(backwardOffset);
+    Translation2d backwardOffset = new Translation2d(distance, rotation);
+    Translation2d newTranslation = pose.getTranslation().plus(backwardOffset);
 
-      return new Pose2d(newTranslation, rotation);
+    return new Pose2d(newTranslation, rotation);
   }
 }
-

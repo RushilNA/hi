@@ -78,10 +78,8 @@ public class Hyperl3 extends Command {
 
       ballDetected = true;
 
-    if(ballDetected){
-      
-    }
-      m_algee.setShooter(0.3);
+      if (ballDetected) {}
+      m_algee.setShooter(-0.15);
       ele.setMotionMagic(elevatorpos);
 
       // Start the delay timer
@@ -94,7 +92,7 @@ public class Hyperl3 extends Command {
     // down.
     if (ballDetected && delayTimer.get() > 1) {
       ele.setMotionMagicflip(-26.0193359375);
-      ele.setMotionMagic(9.84423828125);
+      ele.setMotionMagic(8.14423828125);
     }
   }
 

@@ -58,9 +58,8 @@ public class l3algae extends Command {
   @Override
   public void execute() {
 
-    if(ballDetected){
+    if (ballDetected) {
       Constants.setAlgaestate(Constants.Alagestate.Holding);
-
     }
 
     // Read the current shooter velocity.
@@ -83,7 +82,7 @@ public class l3algae extends Command {
     if (ballDetected == false && ele.flipcheck(flippos) && currentVelocity < 10) {
 
       ballDetected = true;
-      m_algee.setShooter(0.25);
+      m_algee.setShooter(-0.15);
       ele.setMotionMagic(elevatorpos);
 
       // Start the delay timer

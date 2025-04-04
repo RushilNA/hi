@@ -6,9 +6,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.autovision;
 
 public class shooter extends SubsystemBase {
   private TalonFX intake = new TalonFX(16);
@@ -23,10 +23,12 @@ public class shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    
 
     SmartDashboard.putNumber("Intake Current", intake.getStatorCurrent().getValueAsDouble());
     SmartDashboard.putNumber("Intake Velocity", intake.getVelocity().getValueAsDouble());
+
+    SmartDashboard.putString("Coral sate", Constants.getCoralstate().name());
+    SmartDashboard.putString("vision sate", Constants.getvisionstate().name());
   }
 
   public boolean check() {
@@ -41,7 +43,7 @@ public class shooter extends SubsystemBase {
     intake.set(speed);
   }
 
-  public double velocity(){
+  public double velocity() {
     return intake.getVelocity().getValueAsDouble();
   }
 
@@ -54,6 +56,10 @@ public class shooter extends SubsystemBase {
     return current > CURRENT_SPIKE_THRESHOLD;
   }
 
+  public boolean velocitycheck() {
+    return intake.getVelocity().getValueAsDouble() > 40;
+  }
+
   public Command cmd(double speed) {
     return new Command() {
       @Override
@@ -61,12 +67,16 @@ public class shooter extends SubsystemBase {
 
       @Override
       public void execute() {
-        if (speed == -0.2 && intake.getVelocity().getValueAsDouble() > 45){
+        if (speed == -0.2 && Math.abs(intake.getVelocity().getValueAsDouble()) > 15) {
           Constants.setCoralstate(Constants.coralstate.None);
         }
 
-        if(speed == 0.1 && Math.abs(intake.getVelocity().getValueAsDouble()) < 0.5){
+        if (speed == 0.07 && Math.abs(intake.getVelocity().getValueAsDouble()) < 4) {
           Constants.setCoralstate(Constants.coralstate.Holding);
+        }
+
+        if (speed == -0.3) {
+          Constants.setCoralstate(Constants.coralstate.None);
         }
         // check(position);
         intake.set(speed);
@@ -80,6 +90,14 @@ public class shooter extends SubsystemBase {
         return false; // Check if the setpoint is reached
       }
     };
+  }
+
+  public void visioncheck() {
+    if (Constants.getvisionstate() == autovision.None) {
+      Constants.setvisionsate(autovision.Holding);
+    } else {
+      Constants.setvisionsate(autovision.None);
+    }
   }
 
   public Command scourcecmd(double speed) {
@@ -122,7 +140,7 @@ public class shooter extends SubsystemBase {
 
     double Velo = intake.getVelocity().getValueAsDouble();
 
-    double velocitythreshold = 20;
+    double velocitythreshold = 18;
 
     return Math.abs(Velo) > velocitythreshold;
   }
@@ -158,18 +176,14 @@ public class shooter extends SubsystemBase {
       }
 
       @Override
-      public void execute() {
-        intake.set(speed);
-      }
+      public void execute() {}
 
       @Override
-      public void end(boolean interrupted) {
-        intake.set(0);
-      }
+      public void end(boolean interrupted) {}
 
       @Override
       public boolean isFinished() {
-        return time3.get() > 1.25 && Math.abs(intake.getVelocity().getValueAsDouble()) < 24;
+        return time3.get() > 4;
       }
     };
   }

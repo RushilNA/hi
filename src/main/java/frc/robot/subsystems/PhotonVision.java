@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -76,23 +75,22 @@ public class PhotonVision extends SubsystemBase {
   @Override
   public void periodic() {
     Rotation2d cRotation2d = drivebase.getPose().getRotation();
-    if (!DriverStation.isAutonomous()) {
-      var visionEst = getEstimatedGlobalPose();
-      visionEst.ifPresent(
-          est -> {
-            var estPose = est.estimatedPose.toPose2d();
-            // Change our trust in the measurement based on the tags we can see
-            var estStdDevs = getEstimationStdDevs(estPose);
 
-            drivebase.addVisionMeasurement(
-                new Pose2d(estPose.getX(), estPose.getY(), estPose.getRotation()),
-                est.timestampSeconds,
-                estStdDevs);
-            // Pose2d hi= drivebase.getPose();
-            //        drivebase.resetOdometry(new Pose2d(hi.getX(),hi.getY(),cRotation2d));
+    var visionEst = getEstimatedGlobalPose();
+    visionEst.ifPresent(
+        est -> {
+          var estPose = est.estimatedPose.toPose2d();
+          // Change our trust in the measurement based on the tags we can see
+          var estStdDevs = getEstimationStdDevs(estPose);
 
-          });
-    }
+          drivebase.addVisionMeasurement(
+              new Pose2d(estPose.getX(), estPose.getY(), estPose.getRotation()),
+              est.timestampSeconds,
+              estStdDevs);
+          // Pose2d hi= drivebase.getPose();
+          //        drivebase.resetOdometry(new Pose2d(hi.getX(),hi.getY(),cRotation2d));
+
+        });
   }
 
   // SmartDashboard.putNumber("yaw", getLatestResult().getBestTarget().getYaw());

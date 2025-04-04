@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -298,10 +299,31 @@ public class Drive extends SubsystemBase {
   // }
 
   public ChassisSpeeds getAlignmentSpeeds(Pose2d desiredPose) {
+
+    SmartDashboard.putNumber("X pose", desiredPose.getX());
+    SmartDashboard.putNumber("Y Pose", desiredPose.getY());
+    SmartDashboard.putNumber("Rotation", desiredPose.getRotation().getDegrees());
+
     // Use the teleop auto align controller from your constants
     // Note: The third parameter here is the desired linear speed (set to 0 if you only want to
     // rotate)
     return Constants.TELEOP_AUTO_ALIGN.TELEOP_AUTO_ALIGN_CONTROLLER.calculate(
+        getPose(), desiredPose, 0, desiredPose.getRotation());
+  }
+
+  public ChassisSpeeds getAlignmentSpeedsl2(Pose2d desiredPose) {
+    // Use the teleop auto align controller from your constants
+    // Note: The third parameter here is the desired linear speed (set to 0 if you only want to
+    // rotate)
+    return Constants.TELEOP_AUTO_ALIGNl2.TELEOP_AUTO_ALIGN_CONTROLLER.calculate(
+        getPose(), desiredPose, 0, desiredPose.getRotation());
+  }
+
+  public ChassisSpeeds getAlignmentSpeedsl3(Pose2d desiredPose) {
+    // Use the teleop auto align controller from your constants
+    // Note: The third parameter here is the desired linear speed (set to 0 if you only want to
+    // rotate)
+    return Constants.TELEOP_AUTO_ALIGNl3.TELEOP_AUTO_ALIGN_CONTROLLER.calculate(
         getPose(), desiredPose, 0, desiredPose.getRotation());
   }
 
@@ -317,16 +339,42 @@ public class Drive extends SubsystemBase {
   //     io.setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds));
   //   })};
 
-
   public boolean isAtTarget(Pose2d target, Pose2d currentPose) {
     double toleranceMeters = 0.1; // 10 cm tolerance
     return currentPose.getTranslation().getDistance(target.getTranslation()) < toleranceMeters;
   }
+
   public Command autoAlighnTopose(Pose2d Targetpose) {
     return run(
         () -> {
           ChassisSpeeds speeds = getAlignmentSpeeds(Targetpose);
           double maxLinear = Constants.OBSERVED_DRIVE_SPEED.in(MetersPerSecond);
+          speeds.vxMetersPerSecond =
+              MathUtil.clamp(speeds.vxMetersPerSecond * 1, -maxLinear, maxLinear);
+          speeds.vyMetersPerSecond =
+              MathUtil.clamp(speeds.vyMetersPerSecond * 1, -maxLinear, maxLinear);
+          io.setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds));
+        });
+  }
+
+  public Command autoAlighnToposel2(Pose2d Targetpose) {
+    return run(
+        () -> {
+          ChassisSpeeds speeds = getAlignmentSpeedsl2(Targetpose);
+          double maxLinear = Constants.OBSERVED_DRIVE_SPEEDl2.in(MetersPerSecond);
+          speeds.vxMetersPerSecond =
+              MathUtil.clamp(speeds.vxMetersPerSecond * 1, -maxLinear, maxLinear);
+          speeds.vyMetersPerSecond =
+              MathUtil.clamp(speeds.vyMetersPerSecond * 1, -maxLinear, maxLinear);
+          io.setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds));
+        });
+  }
+
+  public Command autoAlighnToposel3(Pose2d Targetpose) {
+    return run(
+        () -> {
+          ChassisSpeeds speeds = getAlignmentSpeedsl3(Targetpose);
+          double maxLinear = Constants.OBSERVED_DRIVE_SPEEDl3.in(MetersPerSecond);
           speeds.vxMetersPerSecond =
               MathUtil.clamp(speeds.vxMetersPerSecond * 1, -maxLinear, maxLinear);
           speeds.vyMetersPerSecond =

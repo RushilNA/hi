@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot1Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -25,23 +26,37 @@ import frc.robot.Constants;
 import java.util.List;
 
 public class elevatorsub extends SubsystemBase {
-  private List<Double> setpoints1 = List.of(0.0, .0, 0.0, 9.84423828125, 26.841796875, 5.0);
+
+  private boolean vision = true;
+  private List<Double> setpoints1 = List.of(0.0, .0, 0.0, 9.34423828125, 25.44423828125, 5.0);
   private List<Double> setpoints2 = List.of(0.0, 7.75048828125, 7.75048828125, 35.0, 4.5, 5.5);
   private List<Double> activeSetpoints = setpoints1; // Default to setpoints
   private TalonFX le = new TalonFX(14, "Drivetrain");
   private TalonFX re = new TalonFX(13, "Drivetrain");
   private TalonFX flippydoo = new TalonFX(17);
-  private PIDController pidup = new PIDController(0.06, 0, 0);
+  private PIDController pidup = new PIDController(0.05, 0, 0);
   private PIDController pidauto = new PIDController(0.03, 0, 0);
   private Timer match_time = new Timer();
 
+  TalonFXConfiguration talonFXConfigs = new TalonFXConfiguration();
+  Slot0Configs expo = talonFXConfigs.Slot0;
+
   TalonFXConfiguration cfg = new TalonFXConfiguration();
+  TalonFXConfiguration cfd = new TalonFXConfiguration();
+
   TalonFXConfiguration cff = new TalonFXConfiguration();
   private final VoltageOut m_sysIdControl = new VoltageOut(0);
   private Slot0Configs slot0 = cfg.Slot0;
+  private Slot1Configs slotd = cfd.Slot1;
+
   private Slot0Configs slot2 = cff.Slot0;
   MotionMagicConfigs motionMagicConfigs = cfg.MotionMagic;
+  MotionMagicConfigs motionMagicConfigs21 = cfd.MotionMagic;
+
   MotionMagicConfigs motionMagicConfigs2 = cff.MotionMagic;
+
+  MotionMagicConfigs motionMagicConfigsexpo = talonFXConfigs.MotionMagic;
+
   final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
   final MotionMagicVoltage m_request1 = new MotionMagicVoltage(0);
   private final ProfiledPIDController profiledPID =
@@ -83,13 +98,20 @@ public class elevatorsub extends SubsystemBase {
               volts -> re.setControl(m_sysIdControl.withOutput(volts)), null, this));
 
   public elevatorsub() {
-    slot0.kG = 0.1; // A gear ratio of 4:1 results in 0.25 output
-    slot0.kS = 0.25;
-    slot0.kV = 0.28; // A velocity target of 1 rps results in 0.12 V output
+
+    expo.kS = 0.25; // Add 0.25 V output to overcome static friction
+    expo.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
+    expo.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
+    expo.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
+    expo.kI = 0; // no output for integrated error
+    expo.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
+    slot0.kG = 0.3; // A gear ratio of 4:1 results in 0.25 output
+    slot0.kS = 0.3;
+    slot0.kV = 0.3; // A velocity target of 1 rps results in 0.12 V output
     slot0.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
-    slot0.kP = 2.6; // A position error of 2.5 rotations results in 12 V output
-    slot0.kI = 0.1; // no output for integrated error
-    slot0.kD = 0; // A velocity error of 1 rps results in 0.1 V output
+    slot0.kP = 8; // A position error of 2.5 rotations results in 12 V output
+    slot0.kI = 0; // no output for integrated error
+    slot0.kD = 0.3; // A velocity error of 1 rps results in 0.1 V output
 
     slot2.kG = 0.1; // A gear ratio of 4:1 results in 0.25 output
     slot2.kS = 0.25;
@@ -103,12 +125,17 @@ public class elevatorsub extends SubsystemBase {
     motionMagicConfigs2.MotionMagicCruiseVelocity = 100;
     motionMagicConfigs2.MotionMagicAcceleration = 300;
     motionMagicConfigs2.MotionMagicJerk = 900;
-    // cfg.Feedback.FeedbackRemoteSensorID = hi.getDeviceID();
 
-    motionMagicConfigs.MotionMagicCruiseVelocity = 100; // Target cruise velocity of 80 rps
+    motionMagicConfigs.MotionMagicCruiseVelocity = 500; // Target cruise velocity of 80 rps
     motionMagicConfigs.MotionMagicAcceleration =
-        300; // Target acceleration of 160 rps/s (0.5 seconds)
+        400; // Target acceleration of 160 rps/s (0.5 seconds)
     motionMagicConfigs.MotionMagicJerk = 900; // Target jerk of 1600 rps/s/s (0.1 seconds)\
+
+    motionMagicConfigsexpo.MotionMagicCruiseVelocity = 0; // Unlimited cruise velocity
+    motionMagicConfigsexpo.MotionMagicExpo_kV = 0.12; // kV is around 0.12 V/rps
+    motionMagicConfigsexpo.MotionMagicExpo_kA = 0.1; // Use a slower kA of 0.1 V/(rps/s)
+
+    // cfg.Feedback.FeedbackRemoteSensorID = hi.getDeviceID();
 
     le.getConfigurator().apply(cfg);
     re.getConfigurator().apply(cfg);
@@ -119,12 +146,15 @@ public class elevatorsub extends SubsystemBase {
 
     // Follower followrequest = new Follower(le.getDeviceID(), true);
 
-    SignalLogger.start();
     match_time.start();
   }
 
   @Override
   public void periodic() {
+    SmartDashboard.putBoolean("vision check", vision);
+
+    SmartDashboard.putNumber("leftvoltage", le.getMotorVoltage().getValueAsDouble());
+    SmartDashboard.putNumber("rightvoltage", re.getMotorVoltage().getValueAsDouble());
 
     SmartDashboard.putNumber("left", le.getPosition().getValueAsDouble());
     SmartDashboard.putNumber("right", -re.getPosition().getValueAsDouble());
@@ -161,7 +191,7 @@ public class elevatorsub extends SubsystemBase {
     le.setControl(
         m_request
             .withPosition(activeSetpoints.get(position))
-            .withFeedForward(0.15)
+            .withFeedForward(0.6)
             .withEnableFOC(true));
 
     // If you want the follower to track, you can do the same for 're' if needed.
@@ -169,8 +199,7 @@ public class elevatorsub extends SubsystemBase {
 
   public void setMotionMagicflip(double position) {
     // Use Motion Magic with feedforward and FOC enabled.
-    flippydoo.setControl(
-        m_request.withPosition(position).withEnableFOC(true).withFeedForward(0.15));
+    flippydoo.setControl(m_request.withPosition(position).withEnableFOC(true).withFeedForward(0.4));
     // If you want the follower to track, you can do the same for 're' if needed.
   }
 
@@ -196,6 +225,11 @@ public class elevatorsub extends SubsystemBase {
     flippydoo.set(speed1);
   }
 
+  public void pid21() {
+    double speed1 = pidup.calculate(le.getPosition().getValueAsDouble());
+    le.set(speed1);
+  }
+
   public void pid2() {
     double speed1 = pidauto.calculate(flippydoo.getPosition().getValueAsDouble());
     flippydoo.set(speed1);
@@ -207,22 +241,22 @@ public class elevatorsub extends SubsystemBase {
       return true;
 
     } else {
-      return false; 
+      return false;
     }
   }
 
-  public boolean autoalighncheck(int targeposition){
-    return targeposition(targeposition) + 0.3   < Math.abs(le.getPosition().getValueAsDouble() )|| targeposition(targeposition) -0.3 < le.getPosition().getValueAsDouble();
+  public boolean autoalighncheck(int targeposition) {
+    return targeposition(targeposition) + 0.3 < Math.abs(le.getPosition().getValueAsDouble())
+        || targeposition(targeposition) - 0.3 < le.getPosition().getValueAsDouble();
   }
 
-
-
-  public void initializePid(double position) {
+  public void initializePid(int position) {
     pidup.reset();
-    pidup.setSetpoint(position);
+    pidup.setSetpoint(targeposition(position));
   }
 
-  public void setPidOutput(double position) {
+  public void setPidOutput(int position) {
+    pidup.setSetpoint(targeposition(position));
     double speed = pidup.calculate(le.getPosition().getValueAsDouble());
     le.set(speed);
   }
@@ -375,6 +409,11 @@ public class elevatorsub extends SubsystemBase {
     };
   }
 
+  public void apply() {
+    le.getConfigurator().apply(cfg);
+    re.getConfigurator().apply(cfg);
+  }
+
   public double targeposition(int index) {
     return activeSetpoints.get(index);
   }
@@ -382,6 +421,11 @@ public class elevatorsub extends SubsystemBase {
   public boolean autoncheck(int index) {
     double sensor = le.getPosition().getValueAsDouble();
     return targeposition(index) - 0.3 < sensor;
+  }
+
+  public boolean autoncheck2(double index) {
+    double sensor = le.getPosition().getValueAsDouble();
+    return index * 0.75 - 0.3 < sensor;
   }
   // 5
   // 4.7
@@ -399,11 +443,13 @@ public class elevatorsub extends SubsystemBase {
 
   public Command Motionmagictoggle(int value) {
     return new Command() {
+
       // Define a tolerance (adjust as needed based on your sensor units)
       private final double kTolerance = 0.25;
 
       @Override
       public void initialize() {
+
         // Optionally reset any state or encoders if needed
 
       }
@@ -464,7 +510,7 @@ public class elevatorsub extends SubsystemBase {
       public boolean isFinished() {
         // End the command once the error is within tolerance.
         double error = Math.abs(le.getPosition().getValueAsDouble() - targetPosition);
-        return kTolerance > error;
+        return false;
       }
     };
   }
@@ -635,6 +681,20 @@ public class elevatorsub extends SubsystemBase {
       activeSetpoints = setpoints1;
       Constants.setRobotState(Constants.RobotState.IDLE);
     }
+  }
+
+  public void visiontoggle() {
+    if (vision == true) {
+      vision = false;
+      System.out.println("hi");
+
+    } else {
+      vision = true;
+    }
+  }
+
+  public boolean visioncheck() {
+    return vision;
   }
 
   public Boolean checkifsetpoint1() {
