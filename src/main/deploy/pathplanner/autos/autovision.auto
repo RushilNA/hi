@@ -5,40 +5,35 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "1peice"
-          }
-        },
-        {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "Timeout"
+                  "name": "Backdrive"
                 }
               },
               {
-                "type": "named",
+                "type": "sequential",
                 "data": {
-                  "name": "autoalighn"
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "1peice"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "autoalighn"
+                      }
+                    }
+                  ]
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "elevatord"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "visionscource"
           }
         }
       ]

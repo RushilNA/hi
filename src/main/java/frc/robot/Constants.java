@@ -37,11 +37,23 @@ import frc.robot.generated.TunerConstants;
  * (log replay from a file).
  */
 public final class Constants {
-  public static final LinearVelocity OBSERVED_DRIVE_SPEED = Units.MetersPerSecond.of(0.9);
-  public static final LinearVelocity OBSERVED_DRIVE_SPEEDl2 = Units.MetersPerSecond.of(1.6);
+
+  public final class elevatorconstants {
+    public double l1 = 0;
+    public double l2 = -26.4;
+    public double l3 = -26.4;
+    public double l4 = -23.3831054687;
+  }
+
+  public static final double l1 = 0;
+  public static final double l2 = -26.8;
+  public static final double l3 = -26.4;
+  public static final double l4 = -23.3831054687;
+  public static final LinearVelocity OBSERVED_DRIVE_SPEED = Units.MetersPerSecond.of(1.3);
+  public static final LinearVelocity OBSERVED_DRIVE_SPEEDl2 = Units.MetersPerSecond.of(0.2);
   public static final LinearVelocity OBSERVED_DRIVE_SPEEDl3 = Units.MetersPerSecond.of(1);
 
-  public static final AngularVelocity TURN_SPEED = Units.DegreesPerSecond.of(1000);
+  public static final AngularVelocity TURN_SPEED = Units.DegreesPerSecond.of(720);
 
   public static class TELEOP_AUTO_ALIGN {
     // TODO: Test if this actually works LOL
@@ -53,7 +65,7 @@ public final class Constants {
     public static final Distance MAX_AUTO_DRIVE_PROCESSOR_DISTANCE = Units.Meters.of(5);
     public static final LinearVelocity MIN_DRIVER_OVERRIDE = OBSERVED_DRIVE_SPEED.div(10);
 
-    public static final PIDController TRANS_CONTROLLER = new PIDController(6.5, 0, 0);
+    public static final PIDController TRANS_CONTROLLER = new PIDController(3.5, 0, 0);
     public static final Distance AT_POINT_TOLERANCE = Units.Inches.of(0.01);
 
     public static final ProfiledPIDController ROTATION_CONTROLLER =

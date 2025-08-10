@@ -7,7 +7,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 // import frc.robot.subsystems.lookuptable.setpoint;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
@@ -36,8 +35,8 @@ public class climbsub extends SubsystemBase {
   private Timer time3 = new Timer();
 
   public climbsub() {
-    cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-    cfg.Feedback.FeedbackRemoteSensorID = climbe.getDeviceID();
+    // cfg.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+    // cfg.Feedback.FeedbackRemoteSensorID = climbe.getDeviceID();
 
     slot0.kG = 0.2; // A gear ratio of 4:1 results in 0.25 output
     slot0.kS = 0.25;
@@ -62,9 +61,11 @@ public class climbsub extends SubsystemBase {
 
     SmartDashboard.putNumber("Error", pidup.getPositionError());
 
+    SmartDashboard.putNumber("Velocity", climbm.getVelocity().getValueAsDouble());
+
     SmartDashboard.putNumber("clibm", climbm.getPosition().getValueAsDouble());
 
-    SmartDashboard.putNumber("Encoder Climb", climbe.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Encoder Climb", climbe.getAbsolutePosition().getValueAsDouble());
   }
 
   public boolean check() {

@@ -29,6 +29,7 @@ public class shooter extends SubsystemBase {
 
     SmartDashboard.putString("Coral sate", Constants.getCoralstate().name());
     SmartDashboard.putString("vision sate", Constants.getvisionstate().name());
+    SmartDashboard.putBoolean("velcoitycheck", velocitycheck());
   }
 
   public boolean check() {
@@ -56,22 +57,36 @@ public class shooter extends SubsystemBase {
     return current > CURRENT_SPIKE_THRESHOLD;
   }
 
+  public boolean velocitywe() {
+
+    double current = intake.getStatorCurrent().getValueAsDouble();
+
+    return current < 10;
+  }
+
   public boolean velocitycheck() {
-    return intake.getVelocity().getValueAsDouble() > 40;
+    return Math.abs(intake.getVelocity().getValueAsDouble()) > 40;
   }
 
   public Command cmd(double speed) {
+
     return new Command() {
       @Override
-      public void initialize() {}
+      public void initialize() {
+
+        time3.reset();
+        time3.start();
+      }
 
       @Override
       public void execute() {
-        if (speed == -0.2 && Math.abs(intake.getVelocity().getValueAsDouble()) > 15) {
+        if (speed == -0.2 && Math.abs(intake.getVelocity().getValueAsDouble()) > 10) {
           Constants.setCoralstate(Constants.coralstate.None);
         }
 
-        if (speed == 0.07 && Math.abs(intake.getVelocity().getValueAsDouble()) < 4) {
+        if (speed == 0.07
+            && Math.abs(intake.getVelocity().getValueAsDouble()) < 4
+            && time3.get() > 1) {
           Constants.setCoralstate(Constants.coralstate.Holding);
         }
 
@@ -127,6 +142,33 @@ public class shooter extends SubsystemBase {
     };
   }
 
+  public Command scourcecmd1(double speed) {
+    return new Command() {
+      @Override
+      public void initialize() {
+
+        // Initialization code, such as resetting encoders or PID controllers
+        // int kErrThreshold = 10; // how many sensor units until its close-enough
+        // int kLoopsToSettle = 2; // how many loops sensor must be close-enough
+        // int _withinThresholdLoops = 0;
+      }
+
+      @Override
+      public void execute() {
+        // check(position);
+        intake.set(speed);
+      }
+
+      @Override
+      public void end(boolean interrupted) {}
+
+      @Override
+      public boolean isFinished() {
+        return false; // Check if the setpoint is reached
+      }
+    };
+  }
+
   public boolean hasVelocity(double inputVelo) {
 
     double Velo = intake.getVelocity().getValueAsDouble();
@@ -137,10 +179,20 @@ public class shooter extends SubsystemBase {
   }
 
   public boolean hasVelocityautoalighn() {
+    Constants.setvisionsate(autovision.None);
 
     double Velo = intake.getVelocity().getValueAsDouble();
 
     double velocitythreshold = 18;
+
+    return Math.abs(Velo) > velocitythreshold;
+  }
+
+  public boolean hasVelocityautoalighnl3() {
+
+    double Velo = intake.getVelocity().getValueAsDouble();
+
+    double velocitythreshold = 11;
 
     return Math.abs(Velo) > velocitythreshold;
   }
@@ -176,14 +228,16 @@ public class shooter extends SubsystemBase {
       }
 
       @Override
-      public void execute() {}
+      public void execute() {
+        intake.set(speed);
+      }
 
       @Override
       public void end(boolean interrupted) {}
 
       @Override
       public boolean isFinished() {
-        return time3.get() > 4;
+        return time3.get() > 0.75;
       }
     };
   }

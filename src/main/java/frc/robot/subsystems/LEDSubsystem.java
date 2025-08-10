@@ -34,9 +34,9 @@ public class LEDSubsystem extends SubsystemBase {
   // - Disabled uses an RGBFade animation.
   // - IDLE uses a Rainbow animation.
   // - ALGEA uses a Fire animation.
-  private final Animation rgbFadeAnimation = new RgbFadeAnimation(1.5, 0.5, 360);
-  private final Animation rainbowAnimation = new RainbowAnimation(1.5, 1, 360, false, 8);
-  private final Animation fireAnimation = new FireAnimation(1.5, 1.5, 360, 0.8, 0.2, false, 8);
+  private final Animation rgbFadeAnimation = new RgbFadeAnimation(1.5, 0.5, 850);
+  private final Animation rainbowAnimation = new RainbowAnimation(1.5, 1, 850, false, 8);
+  private final Animation fireAnimation = new FireAnimation(1.5, 4, 850, 0.8, 0.2, false, 8);
 
   // A simple Color class for setting a solid color during flash mode.
   public static class Color {
@@ -72,14 +72,14 @@ public class LEDSubsystem extends SubsystemBase {
     // Set initial animation based on the current state.
     RobotState initialState = Constants.getRobotState();
     if (!DriverStation.isEnabled()) {
-      animate(rgbFadeAnimation);
+      animate(fireAnimation);
     } else {
       if (initialState == RobotState.ALGEA) {
         animate(rgbFadeAnimation);
       } else if (initialState == RobotState.IDLE) {
-        animate(rainbowAnimation);
+        animate(fireAnimation);
       } else {
-        animate(rainbowAnimation);
+        animate(fireAnimation);
       }
     }
   }
@@ -113,7 +113,7 @@ public class LEDSubsystem extends SubsystemBase {
     // If the robot is disabled, always run the RGBFade animation.
     if (!DriverStation.isEnabled()) {
       flashMode = false; // Cancel any flash mode if active.
-      animate(rgbFadeAnimation);
+      animate(fireAnimation);
     } else {
       RobotState currentState = Constants.getRobotState();
 
@@ -121,7 +121,7 @@ public class LEDSubsystem extends SubsystemBase {
         animate(rainbowAnimation);
       }
       if (currentState == Constants.RobotState.IDLE) {
-        animate(rgbFadeAnimation);
+        animate(fireAnimation);
       }
     }
   }

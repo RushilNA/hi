@@ -39,7 +39,7 @@ public class algee extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Velocity", algaeshooter.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("Velocity33", algaeshooter.getVelocity().getValueAsDouble());
     SmartDashboard.putNumber("Curent spike", getCurrent());
   }
 

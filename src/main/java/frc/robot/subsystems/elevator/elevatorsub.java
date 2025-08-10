@@ -28,8 +28,10 @@ import java.util.List;
 public class elevatorsub extends SubsystemBase {
 
   private boolean vision = true;
-  private List<Double> setpoints1 = List.of(0.0, .0, 0.0, 9.34423828125, 25.44423828125, 5.0);
+  private List<Double> setpoints1 = List.of(0.0, .0, 0.0, 8.74423828125, 25.44423828125, 5.0);
   private List<Double> setpoints2 = List.of(0.0, 7.75048828125, 7.75048828125, 35.0, 4.5, 5.5);
+
+  private int curentelevator = 4;
   private List<Double> activeSetpoints = setpoints1; // Default to setpoints
   private TalonFX le = new TalonFX(14, "Drivetrain");
   private TalonFX re = new TalonFX(13, "Drivetrain");
@@ -151,7 +153,10 @@ public class elevatorsub extends SubsystemBase {
 
   @Override
   public void periodic() {
+
     SmartDashboard.putBoolean("vision check", vision);
+
+    SmartDashboard.putString("Vision check", Constants.getvisionstate().toString());
 
     SmartDashboard.putNumber("leftvoltage", le.getMotorVoltage().getValueAsDouble());
     SmartDashboard.putNumber("rightvoltage", re.getMotorVoltage().getValueAsDouble());
@@ -168,6 +173,30 @@ public class elevatorsub extends SubsystemBase {
     SmartDashboard.putNumber("Match timer", match_time.getMatchTime());
 
     SmartDashboard.putBoolean("check for autonn", autoncheck(1) && flipcheck(-4.13134765625));
+
+    SmartDashboard.putNumber("Elevator Mode", elevatorpos());
+  }
+
+  public double getInvertedElevatorProgress() {
+    // Get the current elevator sensor reading.
+    double currentPosition = le.getPosition().getValueAsDouble();
+
+    // Define the sensor values for the bottom and top of the elevator range.
+    // Adjust these values as appropriate for your hardware.
+    double bottomPosition = 0.0; // Bottom sensor position.
+    double topPosition = 25.44423828125; // Maximum sensor reading (example value).
+
+    // Clamp the current position within the expected bounds.
+    currentPosition = Math.max(bottomPosition, Math.min(currentPosition, topPosition));
+
+    // Calculate the slope (m) for the linear interpolation.
+    // We want: at bottomPosition (0): output = 1, and at topPosition: output = 0.75.
+    double m = (0.75 - 1.0) / (topPosition - bottomPosition);
+
+    // Using point-slope form: output = 1 + m * (currentPosition - bottomPosition)
+    double output = 1.0 + m * (currentPosition - bottomPosition);
+
+    return output;
   }
 
   public void resetenc() {
@@ -191,6 +220,18 @@ public class elevatorsub extends SubsystemBase {
     le.setControl(
         m_request
             .withPosition(activeSetpoints.get(position))
+            .withFeedForward(0.6)
+            .withEnableFOC(true));
+
+    // If you want the follower to track, you can do the same for 're' if needed.
+  }
+
+  public void setMotionMagic1climb(int position) {
+
+    // Use Motion Magic with feedforward and FOC enabled.
+    le.setControl(
+        m_request
+            .withPosition(activeSetpoints.get(position) / 2)
             .withFeedForward(0.6)
             .withEnableFOC(true));
 
@@ -248,6 +289,16 @@ public class elevatorsub extends SubsystemBase {
   public boolean autoalighncheck(int targeposition) {
     return targeposition(targeposition) + 0.3 < Math.abs(le.getPosition().getValueAsDouble())
         || targeposition(targeposition) - 0.3 < le.getPosition().getValueAsDouble();
+  }
+
+  public boolean autoalighncheckpiv(double targeposition) {
+    return targeposition + 0.3 < Math.abs(flippydoo.getPosition().getValueAsDouble())
+        || targeposition - 0.3 < Math.abs(flippydoo.getPosition().getValueAsDouble());
+  }
+
+  public boolean autoalighncheckclimb(double targeposition) {
+    return targeposition + 0.3 < Math.abs(le.getPosition().getValueAsDouble())
+        || targeposition - 0.3 < le.getPosition().getValueAsDouble();
   }
 
   public void initializePid(int position) {
@@ -331,6 +382,53 @@ public class elevatorsub extends SubsystemBase {
       @Override
       public boolean isFinished() {
         return false; // Check if the setpoint is reached
+      }
+    };
+  }
+
+  public Command Flipydo3(int targetPosition) {
+    return new Command() {
+      // Define a tolerance (adjust as needed based on your sensor units)
+      private final double kTolerance = 0.1;
+
+      double position = -10;
+
+      @Override
+      public void initialize() {
+
+        // Optionally reset any state or encoders if needed
+
+      }
+
+      @Override
+      public void execute() {
+
+        if (targetPosition == 1) {
+          position = Constants.l1;
+        }
+
+        if (targetPosition == 2) {
+          position = Constants.l2;
+        }
+
+        if (targetPosition == 3) {
+          position = Constants.l3;
+        }
+
+        if (targetPosition == 4) {
+          position = Constants.l3;
+        }
+        // Command the leader motor using Motion Magic with feedforward.
+        // (Since re is meant to follow le, remove direct control of re here.)
+
+        flippydoo.setControl(m_request.withPosition(position).withEnableFOC(true));
+      }
+
+      @Override
+      public boolean isFinished() {
+        // End the command once the error is within tolerance.
+        double error = Math.abs(le.getPosition().getValueAsDouble() - targetPosition);
+        return false;
       }
     };
   }
@@ -681,6 +779,55 @@ public class elevatorsub extends SubsystemBase {
       activeSetpoints = setpoints1;
       Constants.setRobotState(Constants.RobotState.IDLE);
     }
+  }
+
+  public void togglevision() {
+    if (vision == true) {
+
+      vision = false;
+
+      Constants.setvisionsate(Constants.autovision.None);
+    } else {
+
+      vision = true;
+      Constants.setvisionsate(Constants.autovision.Holding);
+    }
+  }
+
+  public int elevatorpos() {
+
+    if (curentelevator > 4) {
+      curentelevator = 4;
+    }
+
+    if (curentelevator < 0 || curentelevator == 0) {
+      curentelevator = 1;
+    }
+    return curentelevator;
+  }
+
+  public void elevatorup() {
+
+    curentelevator = curentelevator + 1;
+
+    if (curentelevator == 1) {
+      Constants.setElevatorState(Constants.Elevatorposition.L1);
+    } else if (curentelevator == 2) {
+      Constants.setElevatorState(Constants.Elevatorposition.L2);
+    } else if (curentelevator == 3) {
+      Constants.setElevatorState(Constants.Elevatorposition.L3);
+    } else if (curentelevator == 4) {
+      Constants.setElevatorState(Constants.Elevatorposition.L4);
+
+      // Normal
+    } else {
+      Constants.setElevatorState(Constants.Elevatorposition.L0);
+    }
+  }
+
+  public void elevatordown() {
+
+    curentelevator = curentelevator + -1;
   }
 
   public void visiontoggle() {
