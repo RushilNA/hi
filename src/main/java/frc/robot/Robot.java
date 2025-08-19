@@ -1551,7 +1551,7 @@ public class Robot extends LoggedRobot {
                 shoot.cmd(0.5),
                 elevator1.Flipydo(-0.4),
                 elevator1.runOnce(() -> elevator1.resetenc())))
-        .whileFalse( 
+        .whileFalse(
             new ParallelCommandGroup(
                     shoot.cmd(0.1).onlyWhile(() -> joystick.getRightTriggerAxis() < 0.2),
                     // Use a ConditionalCommand to select the pivot value
