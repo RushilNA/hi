@@ -38,7 +38,7 @@ public class PhotonVision extends SubsystemBase {
 
   public PhotonVision(Drive drivebase) {
     this.drivebase = drivebase;
-    camera = new PhotonCamera("FrontRight");
+    camera = new PhotonCamera("Cam1");
     Transform3d kRobotToCam =
         new Transform3d(
             new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(30.625)),

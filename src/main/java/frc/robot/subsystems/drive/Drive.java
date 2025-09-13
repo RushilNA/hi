@@ -43,7 +43,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.subsystems.drive.requests.SysIdSwerveTranslation_Torque;
 import frc.robot.subsystems.vision.VisionUtil.VisionMeasurement;
 import frc.robot.utils.ArrayBuilder;
-import frc.robot.utils.SidePoseMatcher;
+import frc.robot.utils.SidePoseMatchercopy;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Supplier;
@@ -256,7 +256,7 @@ public class Drive extends SubsystemBase {
             Units.degreesToRadians(720) // Max rotational acceleration
             );
 
-    SmartDashboard.putNumber("weeeee311", SidePoseMatcher.getClosestPose1(getPose()).getX());
+    SmartDashboard.putNumber("weeeee311", SidePoseMatchercopy.getClosestPose1(getPose()).getX());
 
     // Now that we have the path, pass it into your pathfinding command
     return AutoBuilder.pathfindThenFollowPath(path, constraints);
@@ -341,6 +341,7 @@ public class Drive extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putString("Side", Constants.getautoalignside().toString());
 
     // SmartDashboard.putNumber(
     //     "distance",
@@ -442,15 +443,44 @@ public class Drive extends SubsystemBase {
     return currentPose.getTranslation().getDistance(target.getTranslation()) < toleranceMeters;
   }
 
+  public Command autoAlighnToposeright(Pose2d Targetpose) {
+    Constants.setautoalignside(Constants.autoalighnside.right);
+    return run(
+        () -> {
+          ChassisSpeeds speeds = getAlignmentSpeeds(Targetpose);
+          double maxLinear = Constants.OBSERVED_DRIVE_SPEED.in(MetersPerSecond);
+          speeds.vxMetersPerSecond =
+              MathUtil.clamp(speeds.vxMetersPerSecond, -maxLinear, maxLinear);
+          speeds.vyMetersPerSecond =
+              MathUtil.clamp(speeds.vyMetersPerSecond, -maxLinear, maxLinear);
+          io.setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds));
+        });
+  }
+
+  public Command autoAlighnToposeleft(Pose2d Targetpose) {
+    Constants.setautoalignside(Constants.autoalighnside.left);
+
+    return run(
+        () -> {
+          ChassisSpeeds speeds = getAlignmentSpeeds(Targetpose);
+          double maxLinear = Constants.OBSERVED_DRIVE_SPEED.in(MetersPerSecond);
+          speeds.vxMetersPerSecond =
+              MathUtil.clamp(speeds.vxMetersPerSecond, -maxLinear, maxLinear);
+          speeds.vyMetersPerSecond =
+              MathUtil.clamp(speeds.vyMetersPerSecond, -maxLinear, maxLinear);
+          io.setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds));
+        });
+  }
+
   public Command autoAlighnTopose(Pose2d Targetpose) {
     return run(
         () -> {
           ChassisSpeeds speeds = getAlignmentSpeeds(Targetpose);
           double maxLinear = Constants.OBSERVED_DRIVE_SPEED.in(MetersPerSecond);
           speeds.vxMetersPerSecond =
-              MathUtil.clamp(speeds.vxMetersPerSecond * 1, -maxLinear, maxLinear);
+              MathUtil.clamp(speeds.vxMetersPerSecond, -maxLinear, maxLinear);
           speeds.vyMetersPerSecond =
-              MathUtil.clamp(speeds.vyMetersPerSecond * 1, -maxLinear, maxLinear);
+              MathUtil.clamp(speeds.vyMetersPerSecond, -maxLinear, maxLinear);
           io.setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds));
         });
   }

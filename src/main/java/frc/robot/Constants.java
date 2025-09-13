@@ -65,20 +65,20 @@ public final class Constants {
     public static final Distance MAX_AUTO_DRIVE_PROCESSOR_DISTANCE = Units.Meters.of(5);
     public static final LinearVelocity MIN_DRIVER_OVERRIDE = OBSERVED_DRIVE_SPEED.div(10);
 
-    public static final PIDController TRANS_CONTROLLER = new PIDController(3.5, 0, 0);
-    public static final Distance AT_POINT_TOLERANCE = Units.Inches.of(0.01);
+    public static final PIDController TRANS_CONTROLLER = new PIDController(1.25, 0, 0);
+    public static final Distance AT_POINT_TOLERANCE = Units.Inches.of(0.001);
 
     public static final ProfiledPIDController ROTATION_CONTROLLER =
         new ProfiledPIDController(
-            4,
+            2.5,
             0,
             0,
             new TrapezoidProfile.Constraints(
                 TURN_SPEED.in(Units.DegreesPerSecond),
                 Math.pow(TURN_SPEED.in(Units.DegreesPerSecond), 2)));
-    public static final Angle AT_ROTATION_TOLERANCE = Units.Degrees.of(1);
+    public static final Angle AT_ROTATION_TOLERANCE = Units.Degrees.of(0.1);
 
-    public static final Distance AUTO_ALIGNMENT_TOLERANCE = Units.Inches.of(0.5);
+    public static final Distance AUTO_ALIGNMENT_TOLERANCE = Units.Inches.of(0.2);
 
     static {
       TRANS_CONTROLLER.setTolerance(AT_POINT_TOLERANCE.in(Units.Meters));
@@ -250,6 +250,22 @@ public final class Constants {
     L2,
     L1, // using Motion Magic to drive to a setpoint
     L0 // using a WPILib PID controller to hold the position
+  }
+
+  public enum autoalighnside {
+    right,
+    left
+  }
+
+  private static autoalighnside currentautolighnside = autoalighnside.right;
+
+  public static autoalighnside getautoalignside() {
+    return currentautolighnside;
+  }
+
+  public static void setautoalignside(autoalighnside newState) {
+    currentautolighnside = newState;
+    System.out.println("auto align side updated to: " + newState);
   }
 
   private static Elevatorposition curentElevatorposition = Elevatorposition.L0;

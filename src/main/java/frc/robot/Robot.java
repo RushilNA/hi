@@ -29,17 +29,10 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.ScourceCam;
-import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIO;
-import frc.robot.subsystems.arm.ArmIOCTRE;
-import frc.robot.subsystems.arm.ArmIOSIM;
 import frc.robot.subsystems.arm.algee;
 import frc.robot.subsystems.climbsub;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.elevator.ElevatorIO;
-import frc.robot.subsystems.elevator.ElevatorIOSIM;
 import frc.robot.subsystems.elevator.elevatorsub;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
@@ -48,7 +41,7 @@ import frc.robot.subsystems.flywheel.shooter;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.utils.LocalADStarAK;
-import frc.robot.utils.SidePoseMatcher;
+import frc.robot.utils.SidePoseMatchercopy;
 import frc.robot.utils.TunableController;
 import frc.robot.utils.TunableController.TunableControllerType;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -74,6 +67,9 @@ public class Robot extends LoggedRobot {
   private final TunableController joystick3 =
       new TunableController(2).withControllerType(TunableControllerType.QUADRATIC);
 
+  private final TunableController joystick4 =
+      new TunableController(3).withControllerType(TunableControllerType.QUADRATIC);
+
   // Swerve drive requests and helpers
   private final SwerveRequest.FieldCentric driveRequest =
       new SwerveRequest.FieldCentric()
@@ -92,8 +88,7 @@ public class Robot extends LoggedRobot {
   // Subsystems
   private final Drive drivetrain;
   private final Flywheel flywheel;
-  private final Elevator elevator;
-  private final Arm arm;
+
   // Vision subsystem field for non-sim (REAL) mode
   private Vision vision;
 
@@ -151,8 +146,8 @@ public class Robot extends LoggedRobot {
         // Initialize vision for the real robot using limelight cameras.
 
         flywheel = new Flywheel(new FlywheelIO() {});
-        elevator = new Elevator(new ElevatorIO() {});
-        arm = new Arm(new ArmIO() {});
+        // elevator = new Elevator(new ElevatorIO() {});
+        // arm = new Arm(new ArmIO() {});
         break;
       case SIM:
         drivetrain = new Drive(currentDriveIO);
@@ -160,8 +155,8 @@ public class Robot extends LoggedRobot {
         cam = new ScourceCam(drivetrain);
 
         flywheel = new Flywheel(new FlywheelIOSIM());
-        elevator = new Elevator(new ElevatorIOSIM());
-        arm = new Arm(new ArmIOSIM());
+        // elevator = new Elevator(new ElevatorIOSIM());
+        // arm = new Arm(new ArmIOSIM());
         break;
       default:
         drivetrain = new Drive(new DriveIO() {});
@@ -177,8 +172,8 @@ public class Robot extends LoggedRobot {
                 new VisionIO() {},
                 new VisionIO() {});
         flywheel = new Flywheel(new FlywheelIO() {});
-        elevator = new Elevator(new ElevatorIO() {});
-        arm = new Arm(new ArmIOCTRE() {});
+        // elevator = new Elevator(new ElevatorIO() {});
+        // arm = new Arm(new ArmIOCTRE() {});
 
         break;
     }
@@ -356,13 +351,13 @@ public class Robot extends LoggedRobot {
                         .andThen(
                             new ParallelCommandGroup(
                                 drivetrain.autoAlighnTopose(
-                                    SidePoseMatcher.getBackedUpClosestRightPose(
+                                    SidePoseMatchercopy.getBackedUpClosestRightPose(
                                         drivetrain.getPose())),
                                 new Elevatorcmd(elevator1, true)))
                         .until(
                             () ->
                                 drivetrain.isAtTarget(
-                                    SidePoseMatcher.getBackedUpClosestRightPose(
+                                    SidePoseMatchercopy.getBackedUpClosestRightPose(
                                         drivetrain.getPose()),
                                     drivetrain.getPose()))
                         .andThen(
@@ -386,13 +381,13 @@ public class Robot extends LoggedRobot {
                         .andThen(
                             new ParallelCommandGroup(
                                 drivetrain.autoAlighnTopose(
-                                    SidePoseMatcher.getBackedUpClosestLeftPose(
+                                    SidePoseMatchercopy.getBackedUpClosestLeftPose(
                                         drivetrain.getPose())),
                                 new Elevatorcmd(elevator1, true)))
                         .until(
                             () ->
                                 drivetrain.isAtTarget(
-                                    SidePoseMatcher.getBackedUpClosestLeftPose(
+                                    SidePoseMatchercopy.getBackedUpClosestLeftPose(
                                         drivetrain.getPose()),
                                     drivetrain.getPose()))
                         .andThen(
@@ -443,8 +438,8 @@ public class Robot extends LoggedRobot {
                     .andThen(
                         new ParallelCommandGroup(
                             drivetrain.autoAlighnTopose(
-                                SidePoseMatcher.moveforwaord2Meters(
-                                    SidePoseMatcher.getCenterReefPose(drivetrain.getPose()))),
+                                SidePoseMatchercopy.moveforwaord2Meters(
+                                    SidePoseMatchercopy.getCenterReefPose(drivetrain.getPose()))),
                             new l3algae(algea, -0.7, 5, elevator1, -11.679, 0)))));
 
     NamedCommands.registerCommand(
@@ -1466,14 +1461,14 @@ public class Robot extends LoggedRobot {
                         .until(() -> elevator1.autoalighncheck(elevator1.elevatorpos()))
                         .andThen(
                             new ParallelCommandGroup(
-                                drivetrain.autoAlighnTopose(
-                                    SidePoseMatcher.getBackedUpClosestRightPosec(
+                                drivetrain.autoAlighnToposeright(
+                                    SidePoseMatchercopy.getBackedUpClosestRightPosec(
                                         drivetrain.getPose())),
                                 new Elevatorcmd(elevator1, true)))
                         .until(
                             () ->
                                 drivetrain.isAtTarget(
-                                    SidePoseMatcher.getBackedUpClosestRightPosec(
+                                    SidePoseMatchercopy.getBackedUpClosestRightPosec(
                                         drivetrain.getPose()),
                                     drivetrain.getPose()))
                         .andThen(
@@ -1495,19 +1490,22 @@ public class Robot extends LoggedRobot {
                     .until(() -> elevator1.autoalighncheck(elevator1.elevatorpos()))
                     .andThen(
                         new ParallelCommandGroup(
-                            drivetrain.autoAlighnTopose(
-                                SidePoseMatcher.getBackedUpClosestRightPosec(drivetrain.getPose())),
+                            drivetrain.autoAlighnToposeright(
+                                SidePoseMatchercopy.getBackedUpClosestRightPosec(
+                                    drivetrain.getPose())),
                             new Elevatorcmd(elevator1, true)))
                     .until(
                         () ->
                             drivetrain.isAtTarget(
-                                SidePoseMatcher.getBackedUpClosestRightPosec(drivetrain.getPose()),
+                                SidePoseMatchercopy.getBackedUpClosestRightPosec(
+                                    drivetrain.getPose()),
                                 drivetrain.getPose()))
                     .andThen(
                         new ParallelCommandGroup(
                             new Elevatorcmd(elevator1, true),
-                            drivetrain.autoAlighnTopose(
-                                SidePoseMatcher.getBackedUpClosestRightPose(drivetrain.getPose()))))
+                            drivetrain.autoAlighnToposeright(
+                                SidePoseMatchercopy.getBackedUpClosestRightPose(
+                                    drivetrain.getPose()))))
                     .withTimeout(0.5)
                     .andThen(
                         new ParallelCommandGroup(shoot.cmd(-0.2), new Elevatorcmd(elevator1, true)))
@@ -1521,14 +1519,14 @@ public class Robot extends LoggedRobot {
                         .until(() -> elevator1.autoalighncheck(elevator1.elevatorpos()))
                         .andThen(
                             new ParallelCommandGroup(
-                                drivetrain.autoAlighnTopose(
-                                    SidePoseMatcher.getBackedUpClosestLeftPosec(
+                                drivetrain.autoAlighnToposeleft(
+                                    SidePoseMatchercopy.getBackedUpClosestLeftPosec(
                                         drivetrain.getPose())),
                                 new Elevatorcmd(elevator1, true)))
                         .until(
                             () ->
                                 drivetrain.isAtTarget(
-                                    SidePoseMatcher.getBackedUpClosestLeftPosec(
+                                    SidePoseMatchercopy.getBackedUpClosestLeftPosec(
                                         drivetrain.getPose()),
                                     drivetrain.getPose()))
                         .andThen(
@@ -1870,7 +1868,7 @@ public class Robot extends LoggedRobot {
     // X wheels
     joystick3.x().whileTrue(drivetrain.brake());
 
-    // joystick3.x().whileTrue();
+    // joystick3.x().whileTrue  ();
     // Trough
     // joystick3
     //     .b()
