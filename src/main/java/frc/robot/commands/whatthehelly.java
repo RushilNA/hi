@@ -5,7 +5,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.elevatorsub;
 
-public class AutonElevatorcmd extends Command {
+public class whatthehelly extends Command {
   private final elevatorsub elevator;
 
   private int targetposition;
@@ -35,7 +35,7 @@ public class AutonElevatorcmd extends Command {
    * @param elevator The elevator subsystem.
    * @param targetPosition The target position (in sensor units) to move to.
    */
-  public AutonElevatorcmd(elevatorsub elevator, int targetposition, boolean hi) {
+  public whatthehelly(elevatorsub elevator, int targetposition, boolean hi) {
     this.up = hi;
     this.elevator = elevator;
     addRequirements(elevator);

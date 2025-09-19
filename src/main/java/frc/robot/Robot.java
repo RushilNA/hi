@@ -12,6 +12,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -25,6 +26,7 @@ import frc.robot.commands.Hyper;
 import frc.robot.commands.Hyperl3;
 import frc.robot.commands.barge;
 import frc.robot.commands.l3algae;
+import frc.robot.commands.whatthehelly;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PhotonVision;
@@ -69,6 +71,18 @@ public class Robot extends LoggedRobot {
 
   private final TunableController joystick4 =
       new TunableController(3).withControllerType(TunableControllerType.QUADRATIC);
+
+  private final TunableController joystick5 =
+      new TunableController(4).withControllerType(TunableControllerType.QUADRATIC);
+
+  private enum DriverChoice {
+    joystick,
+    JOYSTICK_2,
+    JOYSTICK_3,
+    XBOX
+  }
+
+  private final SendableChooser<DriverChoice> driverChooser = new SendableChooser<>();
 
   // Swerve drive requests and helpers
   private final SwerveRequest.FieldCentric driveRequest =
@@ -563,18 +577,18 @@ public class Robot extends LoggedRobot {
                 drive
                     .withVelocityX(
                         MaxSpeed.times(
-                            -joystick3.customLeft().getY()
+                            -joystick5.customLeft().getY()
                                 * elevator1
                                     .getInvertedElevatorProgress())) // Drive forward with negative
                     // Y (forward)
                     .withVelocityY(
                         MaxSpeed.times(
-                            -joystick3.customLeft().getX()
+                            -joystick5.customLeft().getX()
                                 * elevator1
                                     .getInvertedElevatorProgress())) // Drive left with negative X
                     .withRotationalRate(
                         Constants.MaxAngularRate.times(
-                            -joystick3
+                            -joystick5
                                 .customRight()
                                 .getX())))); // Drive counterclockwise with negative X
     // (left)
@@ -1864,6 +1878,7 @@ public class Robot extends LoggedRobot {
     joystick3.leftStick().whileTrue(elevator1.runOnce(() -> elevator1.elevatorup()));
     // Toggle Vision
     joystick3.b().whileTrue(drivetrain.runOnce(() -> drivetrain.resetgyro()));
+    joystick4.b().whileTrue(drivetrain.runOnce(() -> drivetrain.resetgyro()));
 
     // X wheels
     joystick3.x().whileTrue(drivetrain.brake());
@@ -1878,6 +1893,44 @@ public class Robot extends LoggedRobot {
     //             elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
     // Reset Gyro
     // joystick3.b().whileTrue(drivetrain.runOnce(() -> drivetrain.resetgyro()));
+    joystick4
+        .a()
+        .whileTrue(new whatthehelly(elevator1, 4, true))
+        .whileFalse(
+            new SequentialCommandGroup(
+                elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
+
+    joystick4
+        .y()
+        .whileTrue(new whatthehelly(elevator1, 3, true))
+        .whileFalse(
+            new SequentialCommandGroup(
+                elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
+
+    joystick4
+        .x()
+        .whileTrue(new whatthehelly(elevator1, 2, true))
+        .whileFalse(
+            new SequentialCommandGroup(
+                elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
+
+    joystick4
+        .leftTrigger(0.2)
+        .whileTrue(
+            new ParallelCommandGroup(
+                shoot.cmd(0.5),
+                elevator1.Flipydo(-0.4),
+                elevator1.runOnce(() -> elevator1.resetenc())))
+        .whileFalse(
+            new ParallelCommandGroup(
+                shoot.cmd(0.1).onlyWhile(() -> joystick4.getRightTriggerAxis() < 0.2)
+                // Use a ConditionalCommand to select the pivot value
+
+                // runs when condition is true: elevator in pos 4
+
+                ));
+    joystick4.rightTrigger().whileTrue(shoot.cmd(-0.3)).whileFalse(shoot.cmd(0));
+
     // Elevator position down
     joystick3.rightStick().whileTrue(elevator1.runOnce(() -> elevator1.elevatordown()));
     // Toggle Robot Sate
