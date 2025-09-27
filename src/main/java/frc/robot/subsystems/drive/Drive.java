@@ -454,7 +454,7 @@ public class Drive extends SubsystemBase {
           speeds.vyMetersPerSecond =
               MathUtil.clamp(speeds.vyMetersPerSecond * 1.2, -maxLinear, maxLinear);
           io.setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds));
-        }); 
+        });
   }
 
   public Command autoAlighnToposeleft(Pose2d Targetpose) {

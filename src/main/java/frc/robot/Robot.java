@@ -1602,309 +1602,331 @@ public class Robot extends LoggedRobot {
                             || joystick.rightBumper().getAsBoolean()
                             || joystick.leftBumper().getAsBoolean())));
 
-    joystick3
-        .leftTrigger(0.2)
-        .whileTrue(
-            new ParallelCommandGroup(
-                shoot.cmd(0.5),
-                elevator1.Flipydo(-0.4),
-                elevator1.runOnce(() -> elevator1.resetenc())))
-        .whileFalse(
-            new ParallelCommandGroup(
-                    shoot.cmd(0.1).onlyWhile(() -> joystick.getRightTriggerAxis() < 0.2),
-                    // Use a ConditionalCommand to select the pivot value
+    // joystick3
+    //     .leftTrigger(0.2)
+    //     .whileTrue(
+    //         new ParallelCommandGroup(
+    //             shoot.cmd(0.5),
+    //             elevator1.Flipydo(-0.4),
+    //             elevator1.runOnce(() -> elevator1.resetenc())))
+    //     .whileFalse(
+    //         new ParallelCommandGroup(
+    //                 shoot.cmd(0.1).onlyWhile(() -> joystick.getRightTriggerAxis() < 0.2),
+    //                 // Use a ConditionalCommand to select the pivot value
 
-                    // runs when condition is true: elevator in pos 4
-                    elevator1.Flipydo(Constants.l2) // otherwise, use the default value
-                    // condition to check elevator position
-                    )
-                .onlyWhile(
-                    () ->
-                        !(joystick.rightStick().getAsBoolean()
-                            || joystick.getLeftTriggerAxis() > 0.2
-                            || joystick.rightBumper().getAsBoolean()
-                            || joystick.leftBumper().getAsBoolean())));
+    //                 // runs when condition is true: elevator in pos 4
+    //                 elevator1.Flipydo(Constants.l2) // otherwise, use the default value
+    //                 // condition to check elevator position
+    //                 )
+    //             .onlyWhile(
+    //                 () ->
+    //                     !(joystick.rightStick().getAsBoolean()
+    //                         || joystick.getLeftTriggerAxis() > 0.2
+    //                         || joystick.rightBumper().getAsBoolean()
+    //                         || joystick.leftBumper().getAsBoolean())));
 
-    joystick3
-        .leftTrigger(0.2)
-        .and(joystick.leftStick())
-        .whileTrue(
-            new ParallelCommandGroup(
-                shoot.cmd(0.5),
-                elevator1.Flipydo(-0.4),
-                elevator1.runOnce(() -> elevator1.resetenc())))
-        .whileFalse(
-            new ParallelCommandGroup(
-                shoot.cmd(0.1).onlyWhile(() -> joystick.getRightTriggerAxis() < 0.2),
-                // Use a ConditionalCommand to select the pivot value
-                new ConditionalCommand(
-                        elevator1.Flipydo(
-                            -23.38310546875), // runs when condition is true: elevator in pos 4d
-                        elevator1.Flipydo(Constants.l2), // otherwise, use the default value
-                        () -> elevator1.elevatorpos() == 4 // condition to check elevator position
-                        )
-                    .onlyWhile(
-                        () ->
-                            !(joystick.rightStick().getAsBoolean()
-                                || joystick.getLeftTriggerAxis() > 0.2
-                                || joystick.rightBumper().getAsBoolean()
-                                || joystick.leftBumper().getAsBoolean()))));
+    // joystick3
+    //     .leftTrigger(0.2)
+    //     .and(joystick.leftStick())
+    //     .whileTrue(
+    //         new ParallelCommandGroup(
+    //             shoot.cmd(0.5),
+    //             elevator1.Flipydo(-0.4),
+    //             elevator1.runOnce(() -> elevator1.resetenc())))
+    //     .whileFalse(
+    //         new ParallelCommandGroup(
+    //             shoot.cmd(0.1).onlyWhile(() -> joystick.getRightTriggerAxis() < 0.2),
+    //             // Use a ConditionalCommand to select the pivot value
+    //             new ConditionalCommand(
+    //                     elevator1.Flipydo(
+    //                         -23.38310546875), // runs when condition is true: elevator in pos 4d
+    //                     elevator1.Flipydo(Constants.l2), // otherwise, use the default value
+    //                     () -> elevator1.elevatorpos() == 4 // condition to check elevator
+    // position
+    //                     )
+    //                 .onlyWhile(
+    //                     () ->
+    //                         !(joystick.rightStick().getAsBoolean()
+    //                             || joystick.getLeftTriggerAxis() > 0.2
+    //                             || joystick.rightBumper().getAsBoolean()
+    //                             || joystick.leftBumper().getAsBoolean()))));
 
-    joystick3
-        .leftTrigger(0.2)
-        .and(joystick.leftStick())
-        .whileTrue(
-            new ParallelCommandGroup(
-                shoot.cmd(0.5),
-                elevator1.Flipydo(-0.4),
-                elevator1.runOnce(() -> elevator1.resetenc())))
-        .whileFalse(
-            new ParallelCommandGroup(
-                shoot.cmd(0.1).onlyWhile(() -> joystick.getRightTriggerAxis() < 0.2),
-                // Use a ConditionalCommand to select the pivot value
-                new ConditionalCommand(
-                        elevator1.Flipydo(
-                            -23.38310546875), // runs when condition is true: elevator in pos 4
-                        elevator1.Flipydo(Constants.l2), // otherwise, use the default value
-                        () -> elevator1.elevatorpos() == 4 // condition to check elevator position
-                        )
-                    .onlyWhile(
-                        () ->
-                            !(joystick.rightStick().getAsBoolean()
-                                || joystick.getLeftTriggerAxis() > 0.2
-                                || joystick.rightBumper().getAsBoolean()
-                                || joystick.leftBumper().getAsBoolean()))));
-    // Outake
-    joystick3
-        .rightTrigger(0.2)
-        .whileTrue(
-            new ConditionalCommand(
-                shoot.cmd(-0.2),
-                new SequentialCommandGroup(
-                    elevator1.Flipydo(-0.4).until(() -> elevator1.autoalighncheckpiv(-0.4)),
-                    new ParallelCommandGroup(elevator1.Flipydo(-0.4), algea.algeacmd(0.3))),
-                () -> Constants.getRobotState() != Constants.RobotState.ALGEA))
-        .whileFalse(
-            new ParallelCommandGroup(
-                shoot.cmd(0.1).onlyWhile(() -> joystick.getRightTriggerAxis() < 0.2)));
+    // joystick3
+    //     .leftTrigger(0.2)
+    //     .and(joystick.leftStick())
+    //     .whileTrue(
+    //         new ParallelCommandGroup(
+    //             shoot.cmd(0.5),
+    //             elevator1.Flipydo(-0.4),
+    //             elevator1.runOnce(() -> elevator1.resetenc())))
+    //     .whileFalse(
+    //         new ParallelCommandGroup(
+    //             shoot.cmd(0.1).onlyWhile(() -> joystick.getRightTriggerAxis() < 0.2),
+    //             // Use a ConditionalCommand to select the pivot value
+    //             new ConditionalCommand(
+    //                     elevator1.Flipydo(
+    //                         -23.38310546875), // runs when condition is true: elevator in pos 4
+    //                     elevator1.Flipydo(Constants.l2), // otherwise, use the default value
+    //                     () -> elevator1.elevatorpos() == 4 // condition to check elevator
+    // position
+    //                     )
+    //                 .onlyWhile(
+    //                     () ->
+    //                         !(joystick.rightStick().getAsBoolean()
+    //                             || joystick.getLeftTriggerAxis() > 0.2
+    //                             || joystick.rightBumper().getAsBoolean()
+    //                             || joystick.leftBumper().getAsBoolean()))));
+    // // Outake
+    // joystick3
+    //     .rightTrigger(0.2)
+    //     .whileTrue(
+    //         new ConditionalCommand(
+    //             shoot.cmd(-0.2),
+    //             new SequentialCommandGroup(
+    //                 elevator1.Flipydo(-0.4).until(() -> elevator1.autoalighncheckpiv(-0.4)),
+    //                 new ParallelCommandGroup(elevator1.Flipydo(-0.4), algea.algeacmd(0.3))),
+    //             () -> Constants.getRobotState() != Constants.RobotState.ALGEA))
+    //     .whileFalse(
+    //         new ParallelCommandGroup(
+    //             shoot.cmd(0.1).onlyWhile(() -> joystick.getRightTriggerAxis() < 0.2)));
 
-    // left Pole/ Algae
-    // ─── Left Bumper ───────────────────────────────────────────────────────────────
-    joystick3
-        .leftBumper()
-        .whileTrue(
-            new ConditionalCommand(
-                // NOT ALGEA → go to l2left
-                l2left,
-                // ALGEA MODE → check pos1, then pos4, then pos2/3
-                new ConditionalCommand(
-                    // pos1 → pivot to –7
-                    new ParallelCommandGroup(
-                        drivetrain.applyRequest(
-                            () ->
-                                drive
-                                    .withVelocityX(MaxSpeed.times(-joystick3.customLeft().getY()))
-                                    .withVelocityY(MaxSpeed.times(-joystick3.customLeft().getX()))
-                                    .withRotationalRate(
-                                        Constants.MaxAngularRate.times(
-                                            -joystick3.customRight().getX()))),
-                        new l3algae(algea, -0.7, 5, elevator1, -0.4, 0)),
-                    // else → check pos4
-                    new ConditionalCommand(
-                        // pos4 → pivot to 25.444…
-                        new ParallelCommandGroup(
-                            drivetrain.applyRequest(
-                                () ->
-                                    drive
-                                        .withVelocityX(
-                                            MaxSpeed.times(-joystick3.customLeft().getY()))
-                                        .withVelocityY(
-                                            MaxSpeed.times(-joystick3.customLeft().getX()))
-                                        .withRotationalRate(
-                                            Constants.MaxAngularRate.times(
-                                                -joystick3.customRight().getX()))),
-                            new barge(elevator1, 25.44423828125, true, algea)),
-                        // else → your existing pos2/3 logic
-                        new ConditionalCommand(
-                            // pos2 branch
-                            new ConditionalCommand(
-                                new ParallelCommandGroup(
-                                    hyper,
-                                    drivetrain.applyRequest(
-                                        () ->
-                                            drive
-                                                .withVelocityX(
-                                                    MaxSpeed.times(-joystick3.customLeft().getY()))
-                                                .withVelocityY(
-                                                    MaxSpeed.times(-joystick3.customLeft().getX()))
-                                                .withRotationalRate(
-                                                    Constants.MaxAngularRate.times(
-                                                        -joystick3.customRight().getX())))),
-                                new ParallelCommandGroup(
-                                    Positionl2,
-                                    drivetrain.applyRequest(
-                                        () ->
-                                            drive
-                                                .withVelocityX(
-                                                    MaxSpeed.times(-joystick3.customLeft().getY()))
-                                                .withVelocityY(
-                                                    MaxSpeed.times(-joystick3.customLeft().getX()))
-                                                .withRotationalRate(
-                                                    Constants.MaxAngularRate.times(
-                                                        -joystick3.customRight().getX())))),
-                                () -> Constants.getCoralstate() == Constants.coralstate.Holding),
-                            // pos3 branch
-                            new ConditionalCommand(
-                                new ParallelCommandGroup(
-                                    hyperl3,
-                                    drivetrain.applyRequest(
-                                        () ->
-                                            drive
-                                                .withVelocityX(
-                                                    MaxSpeed.times(-joystick3.customLeft().getY()))
-                                                .withVelocityY(
-                                                    MaxSpeed.times(-joystick3.customLeft().getX()))
-                                                .withRotationalRate(
-                                                    Constants.MaxAngularRate.times(
-                                                        -joystick3.customRight().getX())))),
-                                new ParallelCommandGroup(
-                                    Positionl3,
-                                    drivetrain.applyRequest(
-                                        () ->
-                                            drive
-                                                .withVelocityX(
-                                                    MaxSpeed.times(-joystick3.customLeft().getY()))
-                                                .withVelocityY(
-                                                    MaxSpeed.times(-joystick3.customLeft().getX()))
-                                                .withRotationalRate(
-                                                    Constants.MaxAngularRate.times(
-                                                        -joystick3.customRight().getX())))),
-                                () -> Constants.getCoralstate() == Constants.coralstate.Holding),
-                            // choose pos2/3 when elevatorpos == 2
-                            () -> elevator1.elevatorpos() == 2),
-                        // choose pos4 when elevatorpos == 4
-                        () -> elevator1.elevatorpos() == 4),
-                    // choose pos1 when elevatorpos == 1
-                    () -> elevator1.elevatorpos() == 1),
-                // outer: only do this in ALGEA mode
-                () -> Constants.getRobotState() != Constants.RobotState.ALGEA))
-        .whileFalse(
-            new SequentialCommandGroup(
-                elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
+    // // left Pole/ Algae
+    // // ─── Left Bumper ───────────────────────────────────────────────────────────────
+    // joystick3
+    //     .leftBumper()
+    //     .whileTrue(
+    //         new ConditionalCommand(
+    //             // NOT ALGEA → go to l2left
+    //             l2left,
+    //             // ALGEA MODE → check pos1, then pos4, then pos2/3
+    //             new ConditionalCommand(
+    //                 // pos1 → pivot to –7
+    //                 new ParallelCommandGroup(
+    //                     drivetrain.applyRequest(
+    //                         () ->
+    //                             drive
+    //
+    // .withVelocityX(MaxSpeed.times(-joystick3.customLeft().getY()))
+    //
+    // .withVelocityY(MaxSpeed.times(-joystick3.customLeft().getX()))
+    //                                 .withRotationalRate(
+    //                                     Constants.MaxAngularRate.times(
+    //                                         -joystick3.customRight().getX()))),
+    //                     new l3algae(algea, -0.7, 5, elevator1, -0.4, 0)),
+    //                 // else → check pos4
+    //                 new ConditionalCommand(
+    //                     // pos4 → pivot to 25.444…
+    //                     new ParallelCommandGroup(
+    //                         drivetrain.applyRequest(
+    //                             () ->
+    //                                 drive
+    //                                     .withVelocityX(
+    //                                         MaxSpeed.times(-joystick3.customLeft().getY()))
+    //                                     .withVelocityY(
+    //                                         MaxSpeed.times(-joystick3.customLeft().getX()))
+    //                                     .withRotationalRate(
+    //                                         Constants.MaxAngularRate.times(
+    //                                             -joystick3.customRight().getX()))),
+    //                         new barge(elevator1, 25.44423828125, true, algea)),
+    //                     // else → your existing pos2/3 logic
+    //                     new ConditionalCommand(
+    //                         // pos2 branch
+    //                         new ConditionalCommand(
+    //                             new ParallelCommandGroup(
+    //                                 hyper,
+    //                                 drivetrain.applyRequest(
+    //                                     () ->
+    //                                         drive
+    //                                             .withVelocityX(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getY()))
+    //                                             .withVelocityY(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getX()))
+    //                                             .withRotationalRate(
+    //                                                 Constants.MaxAngularRate.times(
+    //                                                     -joystick3.customRight().getX())))),
+    //                             new ParallelCommandGroup(
+    //                                 Positionl2,
+    //                                 drivetrain.applyRequest(
+    //                                     () ->
+    //                                         drive
+    //                                             .withVelocityX(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getY()))
+    //                                             .withVelocityY(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getX()))
+    //                                             .withRotationalRate(
+    //                                                 Constants.MaxAngularRate.times(
+    //                                                     -joystick3.customRight().getX())))),
+    //                             () -> Constants.getCoralstate() == Constants.coralstate.Holding),
+    //                         // pos3 branch
+    //                         new ConditionalCommand(
+    //                             new ParallelCommandGroup(
+    //                                 hyperl3,
+    //                                 drivetrain.applyRequest(
+    //                                     () ->
+    //                                         drive
+    //                                             .withVelocityX(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getY()))
+    //                                             .withVelocityY(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getX()))
+    //                                             .withRotationalRate(
+    //                                                 Constants.MaxAngularRate.times(
+    //                                                     -joystick3.customRight().getX())))),
+    //                             new ParallelCommandGroup(
+    //                                 Positionl3,
+    //                                 drivetrain.applyRequest(
+    //                                     () ->
+    //                                         drive
+    //                                             .withVelocityX(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getY()))
+    //                                             .withVelocityY(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getX()))
+    //                                             .withRotationalRate(
+    //                                                 Constants.MaxAngularRate.times(
+    //                                                     -joystick3.customRight().getX())))),
+    //                             () -> Constants.getCoralstate() == Constants.coralstate.Holding),
+    //                         // choose pos2/3 when elevatorpos == 2
+    //                         () -> elevator1.elevatorpos() == 2),
+    //                     // choose pos4 when elevatorpos == 4
+    //                     () -> elevator1.elevatorpos() == 4),
+    //                 // choose pos1 when elevatorpos == 1
+    //                 () -> elevator1.elevatorpos() == 1),
+    //             // outer: only do this in ALGEA mode
+    //             () -> Constants.getRobotState() != Constants.RobotState.ALGEA))
+    //     .whileFalse(
+    //         new SequentialCommandGroup(
+    //             elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
 
-    // ─── Right Bumper ──────────────────────────────────────────────────────────────
-    joystick3
-        .rightBumper()
-        .whileTrue(
-            new ConditionalCommand(
-                // NOT ALGEA → go to l2right
-                l2right,
-                // ALGEA MODE → pos1, then pos4, then pos2/3
-                new ConditionalCommand(
-                    // pos1 → pivot to –7
-                    new ParallelCommandGroup(
-                        drivetrain.applyRequest(
-                            () ->
-                                drive
-                                    .withVelocityX(MaxSpeed.times(-joystick3.customLeft().getY()))
-                                    .withVelocityY(MaxSpeed.times(-joystick3.customLeft().getX()))
-                                    .withRotationalRate(
-                                        Constants.MaxAngularRate.times(
-                                            -joystick3.customRight().getX()))),
-                        new l3algae(algea, -0.7, 5, elevator1, -0.4, 0)),
-                    // else → pos4
-                    new ConditionalCommand(
-                        // pos4 → pivot to 25.444…
-                        new ParallelCommandGroup(
-                            drivetrain.applyRequest(
-                                () ->
-                                    drive
-                                        .withVelocityX(
-                                            MaxSpeed.times(-joystick3.customLeft().getY()))
-                                        .withVelocityY(
-                                            MaxSpeed.times(-joystick3.customLeft().getX()))
-                                        .withRotationalRate(
-                                            Constants.MaxAngularRate.times(
-                                                -joystick3.customRight().getX()))),
-                            new barge(elevator1, 25.44423828125, true, algea)),
-                        // else → pos2/3 nested
-                        new ConditionalCommand(
-                            // pos2
-                            new ConditionalCommand(
-                                new ParallelCommandGroup(
-                                    hyper1,
-                                    drivetrain.applyRequest(
-                                        () ->
-                                            drive
-                                                .withVelocityX(
-                                                    MaxSpeed.times(-joystick3.customLeft().getY()))
-                                                .withVelocityY(
-                                                    MaxSpeed.times(-joystick3.customLeft().getX()))
-                                                .withRotationalRate(
-                                                    Constants.MaxAngularRate.times(
-                                                        -joystick3.customRight().getX())))),
-                                new ParallelCommandGroup(
-                                    Positionl21,
-                                    drivetrain.applyRequest(
-                                        () ->
-                                            drive
-                                                .withVelocityX(
-                                                    MaxSpeed.times(-joystick3.customLeft().getY()))
-                                                .withVelocityY(
-                                                    MaxSpeed.times(-joystick3.customLeft().getX()))
-                                                .withRotationalRate(
-                                                    Constants.MaxAngularRate.times(
-                                                        -joystick3.customRight().getX())))),
-                                () -> Constants.getCoralstate() == Constants.coralstate.Holding),
-                            // pos3
-                            new ConditionalCommand(
-                                new ParallelCommandGroup(
-                                    hyperl31,
-                                    drivetrain.applyRequest(
-                                        () ->
-                                            drive
-                                                .withVelocityX(
-                                                    MaxSpeed.times(-joystick3.customLeft().getY()))
-                                                .withVelocityY(
-                                                    MaxSpeed.times(-joystick3.customLeft().getX()))
-                                                .withRotationalRate(
-                                                    Constants.MaxAngularRate.times(
-                                                        -joystick3.customRight().getX())))),
-                                new ParallelCommandGroup(
-                                    Positionl31,
-                                    drivetrain.applyRequest(
-                                        () ->
-                                            drive
-                                                .withVelocityX(
-                                                    MaxSpeed.times(-joystick3.customLeft().getY()))
-                                                .withVelocityY(
-                                                    MaxSpeed.times(-joystick3.customLeft().getX()))
-                                                .withRotationalRate(
-                                                    Constants.MaxAngularRate.times(
-                                                        -joystick3.customRight().getX())))),
-                                () -> Constants.getCoralstate() == Constants.coralstate.Holding),
-                            () -> elevator1.elevatorpos() == 2),
-                        () -> elevator1.elevatorpos() == 4),
-                    () -> elevator1.elevatorpos() == 1),
-                () -> Constants.getRobotState() != Constants.RobotState.ALGEA))
-        .whileFalse(
-            new SequentialCommandGroup(
-                elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
+    // // ─── Right Bumper ──────────────────────────────────────────────────────────────
+    // joystick3
+    //     .rightBumper()
+    //     .whileTrue(
+    //         new ConditionalCommand(
+    //             // NOT ALGEA → go to l2right
+    //             l2right,
+    //             // ALGEA MODE → pos1, then pos4, then pos2/3
+    //             new ConditionalCommand(
+    //                 // pos1 → pivot to –7
+    //                 new ParallelCommandGroup(
+    //                     drivetrain.applyRequest(
+    //                         () ->
+    //                             drive
+    //
+    // .withVelocityX(MaxSpeed.times(-joystick3.customLeft().getY()))
+    //
+    // .withVelocityY(MaxSpeed.times(-joystick3.customLeft().getX()))
+    //                                 .withRotationalRate(
+    //                                     Constants.MaxAngularRate.times(
+    //                                         -joystick3.customRight().getX()))),
+    //                     new l3algae(algea, -0.7, 5, elevator1, -0.4, 0)),
+    //                 // else → pos4
+    //                 new ConditionalCommand(
+    //                     // pos4 → pivot to 25.444…
+    //                     new ParallelCommandGroup(
+    //                         drivetrain.applyRequest(
+    //                             () ->
+    //                                 drive
+    //                                     .withVelocityX(
+    //                                         MaxSpeed.times(-joystick3.customLeft().getY()))
+    //                                     .withVelocityY(
+    //                                         MaxSpeed.times(-joystick3.customLeft().getX()))
+    //                                     .withRotationalRate(
+    //                                         Constants.MaxAngularRate.times(
+    //                                             -joystick3.customRight().getX()))),
+    //                         new barge(elevator1, 25.44423828125, true, algea)),
+    //                     // else → pos2/3 nested
+    //                     new ConditionalCommand(
+    //                         // pos2
+    //                         new ConditionalCommand(
+    //                             new ParallelCommandGroup(
+    //                                 hyper1,
+    //                                 drivetrain.applyRequest(
+    //                                     () ->
+    //                                         drive
+    //                                             .withVelocityX(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getY()))
+    //                                             .withVelocityY(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getX()))
+    //                                             .withRotationalRate(
+    //                                                 Constants.MaxAngularRate.times(
+    //                                                     -joystick3.customRight().getX())))),
+    //                             new ParallelCommandGroup(
+    //                                 Positionl21,
+    //                                 drivetrain.applyRequest(
+    //                                     () ->
+    //                                         drive
+    //                                             .withVelocityX(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getY()))
+    //                                             .withVelocityY(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getX()))
+    //                                             .withRotationalRate(
+    //                                                 Constants.MaxAngularRate.times(
+    //                                                     -joystick3.customRight().getX())))),
+    //                             () -> Constants.getCoralstate() == Constants.coralstate.Holding),
+    //                         // pos3
+    //                         new ConditionalCommand(
+    //                             new ParallelCommandGroup(
+    //                                 hyperl31,
+    //                                 drivetrain.applyRequest(
+    //                                     () ->
+    //                                         drive
+    //                                             .withVelocityX(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getY()))
+    //                                             .withVelocityY(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getX()))
+    //                                             .withRotationalRate(
+    //                                                 Constants.MaxAngularRate.times(
+    //                                                     -joystick3.customRight().getX())))),
+    //                             new ParallelCommandGroup(
+    //                                 Positionl31,
+    //                                 drivetrain.applyRequest(
+    //                                     () ->
+    //                                         drive
+    //                                             .withVelocityX(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getY()))
+    //                                             .withVelocityY(
+    //
+    // MaxSpeed.times(-joystick3.customLeft().getX()))
+    //                                             .withRotationalRate(
+    //                                                 Constants.MaxAngularRate.times(
+    //                                                     -joystick3.customRight().getX())))),
+    //                             () -> Constants.getCoralstate() == Constants.coralstate.Holding),
+    //                         () -> elevator1.elevatorpos() == 2),
+    //                     () -> elevator1.elevatorpos() == 4),
+    //                 () -> elevator1.elevatorpos() == 1),
+    //             () -> Constants.getRobotState() != Constants.RobotState.ALGEA))
+    //     .whileFalse(
+    //         new SequentialCommandGroup(
+    //             elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
 
-    joystick3
-        .back()
-        .whileTrue(new Elevatorcmd(elevator1, true))
-        .whileFalse(
-            new SequentialCommandGroup(
-                elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
-    // Elevator pos up
-    joystick3.leftStick().whileTrue(elevator1.runOnce(() -> elevator1.elevatorup()));
-    // Toggle Vision
-    joystick3.b().whileTrue(drivetrain.runOnce(() -> drivetrain.resetgyro()));
-    joystick5.b().whileTrue(drivetrain.runOnce(() -> drivetrain.resetgyro()));
+    // joystick3
+    //     .back()
+    //     .whileTrue(new Elevatorcmd(elevator1, true))
+    //     .whileFalse(
+    //         new SequentialCommandGroup(
+    //             elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
+    // // Elevator pos up
+    // joystick3.leftStick().whileTrue(elevator1.runOnce(() -> elevator1.elevatorup()));
+    // // Toggle Vision
+    // joystick3.b().whileTrue(drivetrain.runOnce(() -> drivetrain.resetgyro()));
+    // joystick5.b().whileTrue(drivetrain.runOnce(() -> drivetrain.resetgyro()));
 
-    // X wheels
-    joystick3.x().whileTrue(drivetrain.brake());
+    // // X wheels
+    // joystick3.x().whileTrue(drivetrain.brake());
 
     // joystick3.x().whileTrue  ();
     // Trough
@@ -1918,59 +1940,40 @@ public class Robot extends LoggedRobot {
     // joystick3.b().whileTrue(drivetrain.runOnce(() -> drivetrain.resetgyro()));
     joystick4
         .a()
-        .whileTrue(new ParallelCommandGroup(drivetrain.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(
-                        MaxSpeed.times(-joystick5.customLeft().getY()))
-                    .withVelocityY(
-                        MaxSpeed.times(-joystick5.customLeft().getX()))
-                    .withRotationalRate(
-                        Constants.MaxAngularRate.times(
-                            -joystick5.customRight().getX()))),new ConditionalCommand(new whatthehelly(elevator1, 4, true), new barge(elevator1, 25.44423828125, true, algea), () -> Constants.getRobotState() != Constants.RobotState.ALGEA)))
+        .whileTrue(
+            new ConditionalCommand(
+                new whatthehelly(elevator1, 4, true),
+                new barge(elevator1, 25.44423828125, true, algea),
+                () -> Constants.getRobotState() != Constants.RobotState.ALGEA))
         .whileFalse(
             new SequentialCommandGroup(
                 elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
 
     joystick4
         .y()
-        .whileTrue(new ParallelCommandGroup(drivetrain.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(
-                        MaxSpeed.times(-joystick5.customLeft().getY()))
-                    .withVelocityY(
-                        MaxSpeed.times(-joystick5.customLeft().getX()))
-                    .withRotationalRate(
-                        Constants.MaxAngularRate.times(
-                            -joystick5.customRight().getX()))),new ConditionalCommand(new whatthehelly(elevator1, 3, true), Positionl2, () -> Constants.getRobotState() == Constants.RobotState.ALGEA)))
+        .whileTrue(
+            new ConditionalCommand(
+                new whatthehelly(elevator1, 3, true),
+                Positionl2,
+                () -> Constants.getRobotState() == Constants.RobotState.ALGEA))
         .whileFalse(
             new SequentialCommandGroup(
                 elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
 
     joystick4
         .x()
-        .whileTrue(new ParallelCommandGroup( drivetrain.applyRequest(
-            () ->
-                drive
-                    .withVelocityX(
-                        MaxSpeed.times(-joystick5.customLeft().getY()))
-                    .withVelocityY(
-                        MaxSpeed.times(-joystick5.customLeft().getX()))
-                    .withRotationalRate(
-                        Constants.MaxAngularRate.times(
-                            -joystick5.customRight().getX()))),new ConditionalCommand(new whatthehelly(elevator1, 2, true), Positionl31, null)))
+        .whileTrue(
+            new ConditionalCommand(
+                new whatthehelly(elevator1, 2, true),
+                Positionl31,
+                () -> Constants.getRobotState() != Constants.RobotState.ALGEA))
         .whileFalse(
             new SequentialCommandGroup(
                 elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
 
     joystick4
         .leftTrigger(0.2)
-        .whileTrue(
-            new ParallelCommandGroup(
-                shoot.cmd(0.5),
-                elevator1.Flipydo(-0.4)
-               ))
+        .whileTrue(new ParallelCommandGroup(shoot.cmd(0.5), elevator1.Flipydo(-0.4)))
         .whileFalse(
             new ParallelCommandGroup(
                 shoot.cmd(0.1).onlyWhile(() -> joystick4.getRightTriggerAxis() < 0.2)
@@ -1980,7 +1983,7 @@ public class Robot extends LoggedRobot {
 
                 ));
 
-                joystick4.start().whileTrue(elevator1.runOnce(() -> elevator1.togglesetpoint()));
+    joystick4.start().whileTrue(elevator1.runOnce(() -> elevator1.togglesetpoint()));
 
     joystick4.rightTrigger().whileTrue(shoot.cmd(-0.3)).whileFalse(shoot.cmd(0));
 
