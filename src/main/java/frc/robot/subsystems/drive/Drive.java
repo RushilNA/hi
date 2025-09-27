@@ -439,7 +439,7 @@ public class Drive extends SubsystemBase {
   }
 
   public boolean isAtTarget(Pose2d target, Pose2d currentPose) {
-    double toleranceMeters = 0.08; // 10 cm tolerance
+    double toleranceMeters = 0.02; // 10 cm tolerance
     return currentPose.getTranslation().getDistance(target.getTranslation()) < toleranceMeters;
   }
 
@@ -450,11 +450,11 @@ public class Drive extends SubsystemBase {
           ChassisSpeeds speeds = getAlignmentSpeeds(Targetpose);
           double maxLinear = Constants.OBSERVED_DRIVE_SPEED.in(MetersPerSecond);
           speeds.vxMetersPerSecond =
-              MathUtil.clamp(speeds.vxMetersPerSecond, -maxLinear, maxLinear);
+              MathUtil.clamp(speeds.vxMetersPerSecond * 1.2, -maxLinear, maxLinear);
           speeds.vyMetersPerSecond =
-              MathUtil.clamp(speeds.vyMetersPerSecond, -maxLinear, maxLinear);
+              MathUtil.clamp(speeds.vyMetersPerSecond * 1.2, -maxLinear, maxLinear);
           io.setControl(m_pathApplyRobotSpeeds.withSpeeds(speeds));
-        });
+        }); 
   }
 
   public Command autoAlighnToposeleft(Pose2d Targetpose) {

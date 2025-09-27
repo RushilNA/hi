@@ -12,8 +12,8 @@ public class Elevatorcmd extends Command {
   private double l0 = 0;
 
   private double l1 = -7.13134765625;
-  private double l2 = -26.8;
-  private double l3 = -26.4;
+  private double l2 = -27.8;
+  private double l3 = -26.8;
   private double l4 = -23.08310546875;
 
   private boolean first;

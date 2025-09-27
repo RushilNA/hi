@@ -66,7 +66,7 @@ public final class Constants {
     public static final LinearVelocity MIN_DRIVER_OVERRIDE = OBSERVED_DRIVE_SPEED.div(10);
 
     public static final PIDController TRANS_CONTROLLER = new PIDController(1.25, 0, 0);
-    public static final Distance AT_POINT_TOLERANCE = Units.Inches.of(0.001);
+    public static final Distance AT_POINT_TOLERANCE = Units.Inches.of(0.01);
 
     public static final ProfiledPIDController ROTATION_CONTROLLER =
         new ProfiledPIDController(

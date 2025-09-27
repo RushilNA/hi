@@ -86,8 +86,8 @@ public class Phtoncam extends SubsystemBase {
             new Rotation3d(0.0, Math.toRadians(35.0), Math.toRadians(-10.0)));
 
     // Create cameras (names must match PhotonVision config)
-    cams.add(new VisionCam("Cam1_Left", kRobotToLeftCam, fieldLayout)); // index 0
-    cams.add(new VisionCam("Cam2_Right", kRobotToRightCam, fieldLayout)); // index 1
+    cams.add(new VisionCam("Cam1left", kRobotToLeftCam, fieldLayout)); // index 0
+    cams.add(new VisionCam("Cam2right ", kRobotToRightCam, fieldLayout)); // index 1
 
     // Simulation setup
     if (Robot.isSimulation()) {

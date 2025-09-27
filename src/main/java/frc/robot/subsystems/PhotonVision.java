@@ -41,7 +41,8 @@ public class PhotonVision extends SubsystemBase {
     camera = new PhotonCamera("Cam1");
     Transform3d kRobotToCam =
         new Transform3d(
-            new Translation3d(Units.inchesToMeters(7), 0, Units.inchesToMeters(30.625)),
+            new Translation3d(
+                Units.inchesToMeters(7.3), Units.inchesToMeters(-0), Units.inchesToMeters(30.625)),
             new Rotation3d(0, Math.toRadians(35), Math.toRadians(0)));
 
     photonEstimator =

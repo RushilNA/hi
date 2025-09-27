@@ -19,8 +19,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutonElevatorcmd;
 import frc.robot.commands.AutonomusElevatorcmd;
+import frc.robot.commands.DriveCommands;
 import frc.robot.commands.Elevatorcmd;
 import frc.robot.commands.Hyper;
 import frc.robot.commands.Hyperl3;
@@ -30,6 +32,7 @@ import frc.robot.commands.whatthehelly;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.PhotonVision;
+import frc.robot.subsystems.Phtoncam;
 import frc.robot.subsystems.ScourceCam;
 import frc.robot.subsystems.arm.algee;
 import frc.robot.subsystems.climbsub;
@@ -75,6 +78,9 @@ public class Robot extends LoggedRobot {
   private final TunableController joystick5 =
       new TunableController(4).withControllerType(TunableControllerType.QUADRATIC);
 
+  private final TunableController joystick6 =
+      new TunableController(5).withControllerType(TunableControllerType.QUADRATIC);
+
   private enum DriverChoice {
     joystick,
     JOYSTICK_2,
@@ -112,6 +118,7 @@ public class Robot extends LoggedRobot {
   private algee algea = new algee();
   private LEDSubsystem led = new LEDSubsystem();
   private final PhotonVision hi;
+  private final Phtoncam jit;
   private final ScourceCam cam;
   private climbsub climb = new climbsub();
 
@@ -156,6 +163,7 @@ public class Robot extends LoggedRobot {
         hi = new PhotonVision(drivetrain);
 
         cam = new ScourceCam(drivetrain);
+        jit = new Phtoncam(drivetrain);
 
         // Initialize vision for the real robot using limelight cameras.
 
@@ -167,6 +175,7 @@ public class Robot extends LoggedRobot {
         drivetrain = new Drive(currentDriveIO);
         hi = new PhotonVision(drivetrain);
         cam = new ScourceCam(drivetrain);
+        jit = new Phtoncam(drivetrain);
 
         flywheel = new Flywheel(new FlywheelIOSIM());
         // elevator = new Elevator(new ElevatorIOSIM());
@@ -177,6 +186,7 @@ public class Robot extends LoggedRobot {
         hi = new PhotonVision(drivetrain);
 
         cam = new ScourceCam(drivetrain);
+        jit = new Phtoncam(drivetrain);
 
         vision =
             new Vision(
@@ -463,6 +473,19 @@ public class Robot extends LoggedRobot {
 
     // --- Setup Autonomous Chooser ---
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Forward)",
+        drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Reverse)",
+        drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Forward)", drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Reverse)", drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Drive Wheel Radius Characterization",
+        DriveCommands.wheelRadiusCharacterization(drivetrain));
 
     // --- Register Named Commands ---
 
@@ -1616,7 +1639,7 @@ public class Robot extends LoggedRobot {
                 // Use a ConditionalCommand to select the pivot value
                 new ConditionalCommand(
                         elevator1.Flipydo(
-                            -23.38310546875), // runs when condition is true: elevator in pos 4
+                            -23.38310546875), // runs when condition is true: elevator in pos 4d
                         elevator1.Flipydo(Constants.l2), // otherwise, use the default value
                         () -> elevator1.elevatorpos() == 4 // condition to check elevator position
                         )
@@ -1878,7 +1901,7 @@ public class Robot extends LoggedRobot {
     joystick3.leftStick().whileTrue(elevator1.runOnce(() -> elevator1.elevatorup()));
     // Toggle Vision
     joystick3.b().whileTrue(drivetrain.runOnce(() -> drivetrain.resetgyro()));
-    joystick4.b().whileTrue(drivetrain.runOnce(() -> drivetrain.resetgyro()));
+    joystick5.b().whileTrue(drivetrain.runOnce(() -> drivetrain.resetgyro()));
 
     // X wheels
     joystick3.x().whileTrue(drivetrain.brake());
@@ -1895,21 +1918,48 @@ public class Robot extends LoggedRobot {
     // joystick3.b().whileTrue(drivetrain.runOnce(() -> drivetrain.resetgyro()));
     joystick4
         .a()
-        .whileTrue(new whatthehelly(elevator1, 4, true))
+        .whileTrue(new ParallelCommandGroup(drivetrain.applyRequest(
+            () ->
+                drive
+                    .withVelocityX(
+                        MaxSpeed.times(-joystick5.customLeft().getY()))
+                    .withVelocityY(
+                        MaxSpeed.times(-joystick5.customLeft().getX()))
+                    .withRotationalRate(
+                        Constants.MaxAngularRate.times(
+                            -joystick5.customRight().getX()))),new ConditionalCommand(new whatthehelly(elevator1, 4, true), new barge(elevator1, 25.44423828125, true, algea), () -> Constants.getRobotState() != Constants.RobotState.ALGEA)))
         .whileFalse(
             new SequentialCommandGroup(
                 elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
 
     joystick4
         .y()
-        .whileTrue(new whatthehelly(elevator1, 3, true))
+        .whileTrue(new ParallelCommandGroup(drivetrain.applyRequest(
+            () ->
+                drive
+                    .withVelocityX(
+                        MaxSpeed.times(-joystick5.customLeft().getY()))
+                    .withVelocityY(
+                        MaxSpeed.times(-joystick5.customLeft().getX()))
+                    .withRotationalRate(
+                        Constants.MaxAngularRate.times(
+                            -joystick5.customRight().getX()))),new ConditionalCommand(new whatthehelly(elevator1, 3, true), Positionl2, () -> Constants.getRobotState() == Constants.RobotState.ALGEA)))
         .whileFalse(
             new SequentialCommandGroup(
                 elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
 
     joystick4
         .x()
-        .whileTrue(new whatthehelly(elevator1, 2, true))
+        .whileTrue(new ParallelCommandGroup( drivetrain.applyRequest(
+            () ->
+                drive
+                    .withVelocityX(
+                        MaxSpeed.times(-joystick5.customLeft().getY()))
+                    .withVelocityY(
+                        MaxSpeed.times(-joystick5.customLeft().getX()))
+                    .withRotationalRate(
+                        Constants.MaxAngularRate.times(
+                            -joystick5.customRight().getX()))),new ConditionalCommand(new whatthehelly(elevator1, 2, true), Positionl31, null)))
         .whileFalse(
             new SequentialCommandGroup(
                 elevator1.Motionmagictoggle(0), new AutonElevatorcmd(elevator1, 0, false)));
@@ -1919,8 +1969,8 @@ public class Robot extends LoggedRobot {
         .whileTrue(
             new ParallelCommandGroup(
                 shoot.cmd(0.5),
-                elevator1.Flipydo(-0.4),
-                elevator1.runOnce(() -> elevator1.resetenc())))
+                elevator1.Flipydo(-0.4)
+               ))
         .whileFalse(
             new ParallelCommandGroup(
                 shoot.cmd(0.1).onlyWhile(() -> joystick4.getRightTriggerAxis() < 0.2)
@@ -1929,6 +1979,9 @@ public class Robot extends LoggedRobot {
                 // runs when condition is true: elevator in pos 4
 
                 ));
+
+                joystick4.start().whileTrue(elevator1.runOnce(() -> elevator1.togglesetpoint()));
+
     joystick4.rightTrigger().whileTrue(shoot.cmd(-0.3)).whileFalse(shoot.cmd(0));
 
     // Elevator position down
@@ -1945,6 +1998,17 @@ public class Robot extends LoggedRobot {
         .a()
         .whileTrue(new ParallelCommandGroup(climb.cmdspeed(-1)))
         .whileFalse(climb.cmdspeed(0));
+
+    joystick6.a().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+
+    // B → Quasistatic Reverse
+    joystick6.b().whileTrue(drivetrain.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+
+    // X → Dynamic Forward
+    joystick6.x().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kForward));
+
+    // Y → Dynamic Reverse
+    joystick6.y().whileTrue(drivetrain.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   }
 
   public Command getAutonomousCommand() {

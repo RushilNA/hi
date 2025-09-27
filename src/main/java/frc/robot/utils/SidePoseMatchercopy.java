@@ -60,14 +60,13 @@ public class SidePoseMatchercopy {
 
   private static final List<Pose2d> blueRightPoses1 =
       Arrays.asList(
-          new Pose2d(new Translation2d(3.6, 2.9), new Rotation2d(Math.toRadians(60.59))),
+          new Pose2d(new Translation2d(3.69, 2.95), new Rotation2d(Math.toRadians(60.54))),
           new Pose2d(new Translation2d(5.34, 2.98), new Rotation2d(Math.toRadians(119.11))),
           new Pose2d(new Translation2d(5.83, 4.24), new Rotation2d(Math.toRadians(177.52))),
           new Pose2d(
               new Translation2d(4.99, 5.28), new Rotation2d(Math.toRadians(-121.69))), // left
           new Pose2d(new Translation2d(3.93, 5.23), new Rotation2d(Math.toRadians(-57.35))), // left
           new Pose2d(new Translation2d(3.16, 4.15), new Rotation2d(Math.toRadians(2.04))));
-
   // Right poses for the blue alliance (second of each pair)
   private static final List<Pose2d> blueLeftPoses1 =
       Arrays.asList(
@@ -76,7 +75,7 @@ public class SidePoseMatchercopy {
           new Pose2d(new Translation2d(5.82, 3.87), new Rotation2d(Math.toRadians(-178.91))),
           new Pose2d(
               new Translation2d(5.30, 5.09), new Rotation2d(Math.toRadians(-118.12))), // left
-          new Pose2d(new Translation2d(3.63, 5.07), new Rotation2d(Math.toRadians(-61.68))), // righ
+          new Pose2d(new Translation2d(3.67, 5.15), new Rotation2d(Math.toRadians(-61.68))), // righ
           new Pose2d(new Translation2d(3.15, 3.80), new Rotation2d(Math.toRadians(0.42)))); //
 
   // -------------------- Red Alliance Poses --------------------
@@ -286,7 +285,7 @@ public class SidePoseMatchercopy {
     // Set distance to -2.0 meters if you want a full two-meter offset backwards.
     // (The negative value moves in the opposite direction of the current rotation.)
     // double distance = -0.02; original one
-    double distance = 0.07;
+    double distance = 0.06;
 
     Rotation2d rotation = pose.getRotation();
     Translation2d backwardOffset = new Translation2d(distance, rotation);

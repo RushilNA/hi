@@ -28,7 +28,7 @@ import java.util.List;
 public class elevatorsub extends SubsystemBase {
 
   private boolean vision = true;
-  private List<Double> setpoints1 = List.of(0.0, .0, 0.0, 8.74423828125, 25.44423828125, 5.0);
+  private List<Double> setpoints1 = List.of(0.0, .0, 0.0, 8.94423828125, 25.84423828125, 5.0);
   private List<Double> setpoints2 = List.of(0.0, 7.75048828125, 7.75048828125, 35.0, 4.5, 5.5);
 
   private int curentelevator = 4;
@@ -145,6 +145,8 @@ public class elevatorsub extends SubsystemBase {
     flippydoo.setNeutralMode(NeutralModeValue.Brake);
     le.setNeutralMode(NeutralModeValue.Brake);
     re.setNeutralMode(NeutralModeValue.Brake);
+
+    ;
 
     // Follower followrequest = new Follower(le.getDeviceID(), true);
 
